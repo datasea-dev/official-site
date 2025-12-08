@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Instagram, Linkedin, Github, Mail, MessageCircle, Wrench, ExternalLink, GraduationCap, Building2 } from "lucide-react";
+import { Instagram, Linkedin, Github, Mail, MessageCircle, Wrench, ExternalLink, GraduationCap, Building2, HeartHandshake } from "lucide-react";
 
 // Komponen Custom TikTok
 const TiktokIcon = ({ size = 16, className = "" }: { size?: number, className?: string }) => (
@@ -22,9 +22,6 @@ export default function Footer() {
           {/* KOLOM 1: IDENTITAS */}
           <div className="space-y-4 md:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-3">
-              
-              {/* --- BAGIAN YANG DIRUBAH (LOGO ROUNDED) --- */}
-              {/* rounded-xl = kira-kira 25% curve untuk ukuran segini */}
               <div className="relative w-9 h-9 bg-white rounded-xl overflow-hidden p-0.5 shadow-sm shadow-blue-500/20">
                 <Image 
                   src="/logo-datasea.png" 
@@ -33,7 +30,6 @@ export default function Footer() {
                   className="object-contain"
                 />
               </div>
-              
               <div className="flex flex-col">
                 <span className="font-bold text-lg leading-none tracking-tight text-white">DATASEA</span>
                 <span className="text-[10px] text-blue-300 font-medium tracking-wide">OFFICIAL WEBSITE</span>
@@ -44,7 +40,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* KOLOM 2 & 3: NAVIGASI & D-CENTER (Tetap Sama) */}
+          {/* KOLOM 2 & 3: NAVIGASI & D-CENTER */}
           <div className="grid grid-cols-2 gap-8 md:col-span-2 lg:col-span-2">
             
             {/* SUB-KOLOM A: NAVIGASI & AKSES CEPAT */}
@@ -74,6 +70,13 @@ export default function Footer() {
                       <span className="truncate">Prodi Sains Data</span>
                     </a>
                   </li>
+                  {/* --- MENU BARU: RELAWAN --- */}
+                  <li>
+                    <Link href="/relawan" className="hover:text-white hover:translate-x-1 transition-all flex items-center gap-2 group">
+                      <HeartHandshake size={14} className="text-blue-500 group-hover:text-white transition-colors flex-shrink-0"/>
+                      <span className="truncate">Relawan</span>
+                    </Link>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -84,7 +87,7 @@ export default function Footer() {
                 <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-4">D-CENTER</h3>
                 <ul className="space-y-3 text-slate-300">
                   <li>
-                    <a href="https://archive-datasea.vercel.app/" target="_blank" className="hover:text-white hover:translate-x-1 transition-all flex items-center gap-2 group">
+                    <a href="https://archive.datasea.my.id/" target="_blank" className="hover:text-white hover:translate-x-1 transition-all flex items-center gap-2 group">
                       <ExternalLink size={14} className="text-blue-500 group-hover:text-white transition-colors flex-shrink-0"/>
                       Datasea Archive
                     </a>
@@ -110,14 +113,14 @@ export default function Footer() {
                   <SocialLink href="https://instagram.com/datasea.uty" icon={<Instagram size={18} />} />
                   <SocialLink href="https://tiktok.com/@datasea" icon={<TiktokIcon size={18} />} />
                   <SocialLink href="https://linkedin.com/company/datasea" icon={<Linkedin size={18} />} />
-                  <SocialLink href="https://github.com/datasea" icon={<Github size={18} />} />
+                  <SocialLink href="https://github.com/datasea-dev" icon={<Github size={18} />} />
                 </div>
               </div>
             </div>
 
           </div>
 
-          {/* KOLOM 4: PUSAT BANTUAN (Tetap Sama) */}
+          {/* KOLOM 4: PUSAT BANTUAN */}
           <div className="md:col-span-2 lg:col-span-1">
             <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-4">HUBUNGI KAMI</h3>
             

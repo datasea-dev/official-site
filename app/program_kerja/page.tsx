@@ -30,13 +30,18 @@ export default async function ProgramKerja() {
 
   // --- LOGIKA LAYOUT DINAMIS (AGENDA UNGGULAN) ---
   const countBesar = prokerBesar.length;
-  // Jika < 4 item: Flex Center. Jika >= 4 item: Grid 4 Kolom.
+  
+  // Jika < 4 item: Flex Center (tengah). Jika >= 4 item: Grid.
   const containerBesarClass = countBesar < 4 
     ? "flex flex-wrap justify-center gap-6" 
     : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6";
   
-  // Kunci lebar kartu jika mode Flex agar proporsional
-  const cardBesarWrapperClass = countBesar < 4 ? "w-full max-w-[320px]" : "w-full";
+  // PERBAIKAN: 
+  // Hapus 'flex-1' agar kartu tidak melar memenuhi layar.
+  // Set 'max-w-[350px]' agar lebar kartu konsisten (tidak terlalu lebar).
+  const cardBesarWrapperClass = countBesar < 4 
+    ? "w-full max-w-[290px]" 
+    : "w-full";
 
   return (
     <main className="relative min-h-screen flex flex-col text-slate-900 overflow-hidden">
@@ -71,7 +76,7 @@ export default async function ProgramKerja() {
             prokerBesar.map((item, index) => {
               const style = styles[index % styles.length]; 
               return (
-                // Wrapper Kartu dengan lebar terkunci jika Flex
+                // Wrapper Kartu
                 <div key={item.id || index} className={cardBesarWrapperClass}>
                     <FlagshipCard 
                       title={item.nama_proker}
@@ -130,14 +135,11 @@ export default async function ProgramKerja() {
               icon={<ShoppingBag size={28} />} colorClass="bg-green-100 text-green-600"
               programs={getProkerByDivisi("EKRAF")}
             />
-            
-            {/* PERBAIKAN: Mengambil data baik dengan nama "Divisi IT" maupun "IT" */}
             <DivisionCard 
               name="Divisi IT" role="Technology & Dev" desc="Pengembangan website dan eksplorasi teknologi."
               icon={<Cpu size={28} />} colorClass="bg-cyan-100 text-cyan-600"
               programs={[...getProkerByDivisi("Divisi IT"), ...getProkerByDivisi("IT")]}
             />
-            
             <DivisionCard 
               name="SATIR" role="Kominfo & Media" desc="Pusat informasi, desain grafis, dan jurnalistik."
               icon={<Palette size={28} />} colorClass="bg-pink-100 text-pink-600"
