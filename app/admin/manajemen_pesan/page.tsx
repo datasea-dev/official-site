@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react"; // Tambahkan Suspense
 import { 
-  MessageSquare, Search, Trash2, CheckCircle, Clock, MailOpen, Filter, Loader2, Eye, X, ChevronLeft, ChevronRight, ChevronDown, AlertTriangle 
+  MessageSquare, Search, Trash2, CheckCircle, Clock, MailOpen, Filter, Loader2, Eye, X, User, Building, Mail, ChevronLeft, ChevronRight, ChevronDown, AlertTriangle 
 } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { getMessages, deleteMessage, updateMessageStatus, MessageData } from "@/lib/firestoreService";
 import { useRouter, useSearchParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 
-export default function PesanPage() {
+// 1. KITA PINDAHKAN LOGIKA UTAMA KE KOMPONEN "CONTENT" INI
+function PesanContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -352,5 +353,18 @@ export default function PesanPage() {
             </div>
         )}
     </main>
+  );
+}
+
+// 2. KITA BUNGKUS KOMPONEN CONTENT DENGAN SUSPENSE DI EXPORT DEFAULT
+export default function PesanPage() {
+  return (
+    <Suspense fallback={
+        <div className="h-screen flex items-center justify-center text-slate-400">
+            <Loader2 className="animate-spin mr-2"/> Memuat Halaman...
+        </div>
+    }>
+      <PesanContent />
+    </Suspense>
   );
 }
