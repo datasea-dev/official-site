@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react"; // Tambahkan Suspense
+import { useState, useEffect, Suspense } from "react"; // PENTING: Ada import Suspense
 import { 
   MessageSquare, Search, Trash2, CheckCircle, Clock, MailOpen, Filter, Loader2, Eye, X, User, Building, Mail, ChevronLeft, ChevronRight, ChevronDown, AlertTriangle 
 } from "lucide-react";
@@ -9,7 +9,7 @@ import { getMessages, deleteMessage, updateMessageStatus, MessageData } from "@/
 import { useRouter, useSearchParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 
-// 1. KITA PINDAHKAN LOGIKA UTAMA KE KOMPONEN "CONTENT" INI
+// --- KOMPONEN KONTEN UTAMA (LOGIKA ADA DI SINI) ---
 function PesanContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -356,7 +356,7 @@ function PesanContent() {
   );
 }
 
-// 2. KITA BUNGKUS KOMPONEN CONTENT DENGAN SUSPENSE DI EXPORT DEFAULT
+// --- BAGIAN INI WAJIB UNTUK MENGHINDARI ERROR BUILD "useSearchParams" ---
 export default function PesanPage() {
   return (
     <Suspense fallback={
