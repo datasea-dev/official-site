@@ -1,128 +1,189 @@
+import { 
+  collection, 
+  getDocs, 
+  addDoc, 
+  updateDoc, 
+  deleteDoc, 
+  doc, 
+  query, 
+  orderBy, 
+  serverTimestamp 
+} from "firebase/firestore";
 import { db } from "./firebase";
-// PERBAIKAN: Menambahkan 'doc' dan 'getDoc' ke dalam import
-import { collection, getDocs, query, orderBy, DocumentData, Query, doc, getDoc } from "firebase/firestore";
 
-// =========================================
-// 1. DEFINISI TIPE DATA (INTERFACES)
-// =========================================
+// ==========================================
+// 1. TIPE DATA (INTERFACES)
+// ==========================================
 
-export interface ProkerBesar {
-  id: string;
-  nama_proker: string;
-  deskripsi: string;
-  tag: string;
-  color: string;
-}
-
-export interface ProkerDivisi {
-  id: string;
-  divisi: string;
-  proker: string;
-  deskripsi: string;
-}
-
-export interface Acara {
+export interface AcaraData {
   id: string;
   nama_acara: string;
   deskripsi_acara: string;
   tanggal_acara: string;
   waktu_acara: string;
-  penyelenggara: string;
   lokasi: string;
-  // Tipe data disesuaikan dengan filter di frontend
-  status_acara: "Segera" | "Berlangsung" | "Selesai"; 
-  tautan_pendaftaran?: string;
+  penyelenggara: string;
+  link_pendaftaran: string;
+  poster_url: string;
+  status_acara: "Segera" | "Berlangsung" | "Selesai" | "Akan Datang";
 }
 
-export interface AnggotaTim {
+export interface ProgramKerjaData {
+  id: string;
+  nama_proker: string;
+  deskripsi: string;
+  divisi: string;
+  status: "Terlaksana" | "Berjalan" | "Rencana";
+  kategori: "Besar" | "Divisi"; // Kita butuh ini untuk logic di frontend admin
+}
+
+export interface TimData {
   id: string;
   nama: string;
   jabatan: string;
   divisi: string;
-  foto_url?: string;
-  urutan?: number;
+  foto_url: string;
+  linkedin_url?: string;
+  instagram_url?: string;
 }
 
 export interface VisiMisiData {
+  id: string;
   visi: string;
   misi: string[];
   quote_ketua?: string;
 }
 
-// =========================================
-// 2. HELPER FUNCTION (Fungsi Bantu)
-// =========================================
-
-async function fetchCollection<T>(collectionName: string, customQuery?: Query<DocumentData>): Promise<T[]> {
-  try {
-    const ref = collection(db, collectionName);
-    const q = customQuery || ref; 
-    const snapshot = await getDocs(q);
-
-    return snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as T[];
-  } catch (error) {
-    console.error(`Error fetching ${collectionName}:`, error);
-    return [];
-  }
+export interface MessageData {
+  id: string;
+  name: string;
+  instansi: string;
+  email: string;
+  message: string;
+  createdAt: any;
+  status: "Baru" | "Dibaca" | "Selesai";
 }
 
-// =========================================
-// 3. MAIN SERVICE FUNCTIONS
-// =========================================
-
-// --- A. Fetch Program Kerja ---
-export async function getProgramKerjaData() {
+// ==========================================
+// 2. LAYANAN: ACARA
+// ==========================================
+export const getAcaraData = async (): Promise<AcaraData[]> => {
   try {
-    const [prokerBesar, prokerDivisi] = await Promise.all([
-      fetchCollection<ProkerBesar>("proker_besar"),
-      
-      fetchCollection<ProkerDivisi>(
-        "proker_divisi", 
-        query(collection(db, "proker_divisi"), orderBy("divisi"))
-      )
-    ]);
+    const querySnapshot = await getDocs(collection(db, "acara"));
+    const list = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as AcaraData[];
+    return list.sort((a, b) => new Date(a.tanggal_acara).getTime() - new Date(b.tanggal_acara).getTime());
+  } catch (error) { console.error(error); return []; }
+};
+
+export const addAcara = async (data: any) => addDoc(collection(db, "acara"), data).then(res => ({ success: true, id: res.id })).catch(err => ({ success: false, error: err }));
+export const updateAcara = async (id: string, data: any) => updateDoc(doc(db, "acara", id), data).then(() => true).catch(() => false);
+export const deleteAcara = async (id: string) => deleteDoc(doc(db, "acara", id)).then(() => true).catch(() => false);
+
+// ==========================================
+// 3. LAYANAN: PROGRAM KERJA (UPDATED: proker_besar & proker_divisi)
+// ==========================================
+
+// Helper: Tentukan nama koleksi berdasarkan kategori
+const getProkerCollection = (kategori: "Besar" | "Divisi") => kategori === "Besar" ? "proker_besar" : "proker_divisi";
+
+// KHUSUS PUBLIC (Mengambil dari DUA koleksi terpisah)
+export const getProgramKerjaData = async () => {
+  try {
+    const besarSnap = await getDocs(collection(db, "proker_besar"));
+    const divisiSnap = await getDocs(collection(db, "proker_divisi"));
+
+    const prokerBesar = besarSnap.docs.map(doc => ({ id: doc.id, ...doc.data(), kategori: "Besar" })) as ProgramKerjaData[];
+    const prokerDivisi = divisiSnap.docs.map(doc => ({ id: doc.id, ...doc.data(), kategori: "Divisi" })) as ProgramKerjaData[];
 
     return { prokerBesar, prokerDivisi };
-
   } catch (error) {
-    console.error("Error fetching Program Kerja data:", error);
+    console.error("Error fetching proker:", error);
     return { prokerBesar: [], prokerDivisi: [] };
   }
-}
+};
 
-// --- B. Fetch Acara ---
-export async function getAcaraData() {
-  return await fetchCollection<Acara>("acara");
-}
-
-// --- C. Fetch Tim Datasea (Untuk Halaman About) ---
-export async function getTimData() {
-  return await fetchCollection<AnggotaTim>(
-    "tim_datasea", 
-    query(collection(db, "tim_datasea"), orderBy("urutan", "asc"))
-  );
-}
-
-// --- D. Fetch Visi Misi ---
-// --- D. Fetch Visi Misi (UPDATED: Ambil Dokumen Pertama) ---
-export async function getVisiMisiData() {
+// KHUSUS ADMIN (Gabung semua untuk ditampilkan di tabel/grid)
+export const getAllProkers = async (): Promise<ProgramKerjaData[]> => {
   try {
-    // Ambil koleksi visi_misi
-    const colRef = collection(db, "visi_misi");
-    const snapshot = await getDocs(colRef);
+    const { prokerBesar, prokerDivisi } = await getProgramKerjaData();
+    return [...prokerBesar, ...prokerDivisi];
+  } catch (error) { return []; }
+};
 
-    if (!snapshot.empty) {
-      // Ambil data dari dokumen pertama yang ditemukan
-      return snapshot.docs[0].data() as VisiMisiData;
-    } else {
-      console.log("Belum ada data visi misi!");
-      return null;
+// CRUD PROKER (Harus cek kategori untuk tahu masuk koleksi mana)
+export const addProker = async (data: Omit<ProgramKerjaData, 'id'>) => {
+  try {
+    const collName = getProkerCollection(data.kategori);
+    const docRef = await addDoc(collection(db, collName), data);
+    return { success: true, id: docRef.id };
+  } catch (error) { return { success: false, error }; }
+};
+
+export const updateProker = async (id: string, data: Partial<ProgramKerjaData>, oldKategori: "Besar" | "Divisi") => {
+  try {
+    // Cek jika kategori berubah, kita harus pindahkan dokumen (Delete -> Add)
+    // Tapi untuk simplifikasi, kita update di koleksi aslinya dulu.
+    // NOTE: Agar aman, parameter 'oldKategori' wajib dikirim dari frontend.
+    const collName = getProkerCollection(oldKategori); 
+    
+    // Jika kategori berubah, ini jadi rumit (Pindah Koleksi). 
+    // Solusi cepat: Hapus lama, buat baru.
+    if (data.kategori && data.kategori !== oldKategori) {
+       await deleteDoc(doc(db, collName, id));
+       await addDoc(collection(db, getProkerCollection(data.kategori)), data);
+       return true;
     }
-  } catch (error) {
-    console.error("Error fetching Visi Misi:", error);
+
+    await updateDoc(doc(db, collName, id), data);
+    return true;
+  } catch (error) { return false; }
+};
+
+export const deleteProker = async (id: string, kategori: "Besar" | "Divisi") => {
+  try {
+    const collName = getProkerCollection(kategori);
+    await deleteDoc(doc(db, collName, id));
+    return true;
+  } catch (error) { return false; }
+};
+
+// ==========================================
+// 4. LAYANAN: TIM (UPDATED: tim_datasea)
+// ==========================================
+
+export const getTimData = async (): Promise<TimData[]> => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "tim_datasea")); // NAMA KOLEKSI BARU
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as TimData[];
+  } catch (error) { return []; }
+};
+
+export const addTim = async (data: any) => addDoc(collection(db, "tim_datasea"), data).then(res => ({ success: true, id: res.id })).catch(err => ({ success: false, error: err }));
+export const updateTim = async (id: string, data: any) => updateDoc(doc(db, "tim_datasea", id), data).then(() => true).catch(() => false);
+export const deleteTim = async (id: string) => deleteDoc(doc(db, "tim_datasea", id)).then(() => true).catch(() => false);
+
+// Visi Misi
+export const getVisiMisiData = async (): Promise<VisiMisiData | null> => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "visi_misi"));
+    if (!querySnapshot.empty) return { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() } as VisiMisiData;
     return null;
-  }
-}
+  } catch (error) { return null; }
+};
+
+// ==========================================
+// 5. LAYANAN: PESAN (messages) - Tetap
+// ==========================================
+export const sendMessage = async (data: any) => addDoc(collection(db, "messages"), { ...data, status: "Baru", createdAt: serverTimestamp() }).then(res => ({ success: true, id: res.id }));
+export const getMessages = async (): Promise<MessageData[]> => {
+  try {
+    const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+    const snap = await getDocs(q);
+    return snap.docs.map(doc => {
+        const d = doc.data();
+        return { id: doc.id, ...d, createdAt: d.createdAt?.toDate().toISOString() || new Date().toISOString() } as MessageData;
+    });
+  } catch (e) { return []; }
+};
+export const updateMessageStatus = async (id: string, status: any) => updateDoc(doc(db, "messages", id), { status }).then(() => true).catch(() => false);
+export const deleteMessage = async (id: string) => deleteDoc(doc(db, "messages", id)).then(() => true).catch(() => false);

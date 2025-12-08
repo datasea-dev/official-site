@@ -19,34 +19,36 @@ export default function Footer() {
         {/* --- LAYOUT UTAMA --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 mb-12 items-start">
           
-          {/* KOLOM 1: IDENTITAS (Full Width di Mobile) */}
+          {/* KOLOM 1: IDENTITAS */}
           <div className="space-y-4 md:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-3">
-              <div className="relative w-9 h-9 bg-white rounded-xl p-0.5">
+              
+              {/* --- BAGIAN YANG DIRUBAH (LOGO ROUNDED) --- */}
+              {/* rounded-xl = kira-kira 25% curve untuk ukuran segini */}
+              <div className="relative w-9 h-9 bg-white rounded-xl overflow-hidden p-0.5 shadow-sm shadow-blue-500/20">
                 <Image 
                   src="/logo-datasea.png" 
                   alt="Logo Datasea" 
                   fill
-                  className="object-cover"
+                  className="object-contain"
                 />
               </div>
+              
               <div className="flex flex-col">
                 <span className="font-bold text-lg leading-none tracking-tight text-white">DATASEA</span>
                 <span className="text-[10px] text-blue-300 font-medium tracking-wide">OFFICIAL WEBSITE</span>
               </div>
             </div>
             <p className="text-slate-400 leading-relaxed text-sm pr-4 max-w-sm">
-              Komunitas mahasiswa UTY sebagai wadah kolaborasi dan pengembangan talenta di bidang Sains Data dan Informatika Medis.
+              Komunitas mahasiswa UTY sebagai wadah kolaborasi dan pengembangan talenta di bidang Sains Data.
             </p>
           </div>
 
-          {/* KOLOM 2 & 3 (DIGABUNG DALAM GRID KECIL DI MOBILE) */}
-          {/* Ini membuat tampilan "Navigasi" dan "Akses Cepat" berdampingan di HP seperti gambar referensi */}
+          {/* KOLOM 2 & 3: NAVIGASI & D-CENTER (Tetap Sama) */}
           <div className="grid grid-cols-2 gap-8 md:col-span-2 lg:col-span-2">
             
             {/* SUB-KOLOM A: NAVIGASI & AKSES CEPAT */}
             <div className="flex flex-col gap-8">
-              {/* Bagian Navigasi */}
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-4">NAVIGASI</h3>
                 <ul className="space-y-3 text-slate-300">
@@ -57,7 +59,6 @@ export default function Footer() {
                 </ul>
               </div>
 
-              {/* Bagian Akses Cepat */}
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-4">AKSES CEPAT</h3>
                 <ul className="space-y-3 text-slate-300">
@@ -79,7 +80,6 @@ export default function Footer() {
 
             {/* SUB-KOLOM B: D-CENTER & SOSIAL MEDIA */}
             <div className="flex flex-col gap-8">
-              {/* Bagian D-Center */}
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-4">D-CENTER</h3>
                 <ul className="space-y-3 text-slate-300">
@@ -104,8 +104,7 @@ export default function Footer() {
                 </ul>
               </div>
 
-              {/* Bagian Sosial Media */}
-              <div className="pt-6">
+              <div className="pt-7">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-4">IKUTI KAMI</h3>
                 <div className="flex flex-wrap gap-2">
                   <SocialLink href="https://instagram.com/datasea.uty" icon={<Instagram size={18} />} />
@@ -118,19 +117,19 @@ export default function Footer() {
 
           </div>
 
-          {/* KOLOM 4: PUSAT BANTUAN (Full Width di Mobile agar jelas) */}
+          {/* KOLOM 4: PUSAT BANTUAN (Tetap Sama) */}
           <div className="md:col-span-2 lg:col-span-1">
             <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-4">HUBUNGI KAMI</h3>
             
             <div className="bg-[#0f172a]/50 border border-slate-700/50 rounded-xl p-4 backdrop-blur-sm flex flex-col gap-3">
               
-              <a href="mailto:datasea.uty@gmail.com" className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-white/5 transition-all group">
+              <a href="mailto:datasea.exp@gmail.com" className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-white/5 transition-all group">
                 <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-colors flex-shrink-0">
                   <Mail size={16} />
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide group-hover:text-slate-400">Email Resmi</span>
-                  <span className="text-xs font-medium text-slate-200 group-hover:text-white truncate">datasea.uty@gmail.com</span>
+                  <span className="text-xs font-medium text-slate-200 group-hover:text-white truncate">datasea.exp@gmail.com</span>
                 </div>
               </a>
 
@@ -169,7 +168,7 @@ export default function Footer() {
             &copy; {currentYear} <span className="text-slate-300 font-medium">DATASEA Community</span>. All rights reserved.
           </p>
           <p>
-            Dibuat oleh <span className="text-slate-300 font-medium">Divisi IT</span>
+            Dibuat oleh <span className="text-slate-300 font-medium">DIVISI IT</span>
           </p>
         </div>
       </div>

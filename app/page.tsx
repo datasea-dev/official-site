@@ -1,46 +1,62 @@
 import Link from "next/link";
 import { ArrowRight, Calendar, Code, Gamepad2, BookOpen, Send, Clock, MapPin } from "lucide-react";
 import { getAcaraData } from "@/lib/firestoreService";
+import ContactForm from "@/components/ContactForm";
+
+// Force dynamic agar data selalu fresh
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   
-  // 1. Ambil Data Acara dari Firebase
+  // 1. Ambil Data
   const allAcara = await getAcaraData();
 
-  // 2. Filter: Hanya status "Segera"
+  // 2. Filter: Tampilkan yang BUKAN "Selesai" (Segera / Berlangsung / Akan Datang)
   const latestEvents = allAcara
-    .filter((a) => a.status_acara === "Segera")
+    .filter((a) => a.status_acara !== "Selesai")
     .slice(0, 3);
 
-  // --- LOGIKA LAYOUT TENGAH ---
+  // --- LOGIKA LAYOUT ---
   const countAcara = latestEvents.length;
+  
   const acaraContainerClass = countAcara < 3 
     ? "flex flex-wrap justify-center gap-8" 
-    : "grid grid-cols-1 md:grid-cols-3 gap-8";
-  const acaraCardClass = countAcara < 3 ? "w-full max-w-[380px]" : "w-full";
+    : "grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center";
+
+  const acaraCardClass = "w-full max-w-[350px] mx-auto";
 
   return (
     <main className="relative flex flex-col text-slate-900 overflow-hidden">
       
       {/* --- SECTION 1: HERO --- */}
-      <section className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 text-center max-w-5xl mx-auto pt-20 relative">
-        <h1 className="text-5xl md:text-7xl font-extrabold text-datasea-blue tracking-tight mb-6 leading-tight">
+      <section className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 text-center max-w-5xl mx-auto pt-20">
+        <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight">
           Komunitas <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Datasea</span>
         </h1>
         <p className="text-lg md:text-xl text-slate-600 font-medium max-w-2xl leading-relaxed mb-10">
-          "With Data, Get Insight"
+          &quot;With Data, Get Insight&quot;
           <br/>
           Energi kolaborasi Sains Data yang berfokus pada pengembangan dan inovasi berbasis data.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Link href="/about" className="px-8 py-3.5 rounded-xl bg-datasea-blue text-white font-semibold hover:bg-blue-900 transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2">
+        
+        {/* --- PERBAIKAN TOMBOL FULL WIDTH DI MOBILE --- */}
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <Link 
+            href="/tentang_kami" 
+            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2"
+          >
             Tentang Kami <ArrowRight size={18} />
           </Link>
-          <Link href="/program_kerja" className="px-8 py-3.5 rounded-xl bg-white text-datasea-blue border border-slate-200 font-semibold hover:bg-slate-50 transition-all flex items-center justify-center gap-2 shadow-sm">
+          <Link 
+            href="/program_kerja" 
+            className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-white text-blue-600 border border-slate-200 font-semibold hover:bg-slate-50 transition-all flex items-center justify-center gap-2 shadow-sm"
+          >
             <Calendar size={18} />
             Lihat Program
           </Link>
         </div>
+        {/* --------------------------------------------- */}
+
         <div className="absolute bottom-10 animate-bounce text-slate-400 flex flex-col items-center gap-2">
           <span className="text-xs font-medium">Scroll ke bawah</span>
           <ArrowRight size={16} className="rotate-90" />
@@ -52,11 +68,11 @@ export default async function Home() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <div>
             <h3 className="text-blue-600 font-bold uppercase tracking-wider text-sm mb-2">SIAPA KAMI?</h3>
-            <h2 className="text-3xl md:text-4xl font-bold text-datasea-blue mb-6">Membangun Talenta Digital Masa Depan</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 mb-6">Membangun Talenta Digital Masa Depan</h2>
             <p className="text-slate-600 text-lg leading-relaxed mb-6">
               Datasea bukan sekadar organisasi, melainkan ekosistem belajar. Kami menghubungkan mahasiswa yang memiliki ketertarikan pada pengolahan data, kecerdasan buatan, dan teknologi kesehatan.
             </p>
-            <Link href="/about" className="text-datasea-blue font-semibold hover:text-blue-600 inline-flex items-center gap-2 group">
+            <Link href="/tentang_kami" className="text-blue-600 font-semibold hover:text-blue-700 inline-flex items-center gap-2 group">
               Selengkapnya tentang sejarah kami <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform"/>
             </Link>
           </div>
@@ -85,11 +101,10 @@ export default async function Home() {
       <section className="relative z-10 py-24 px-6 max-w-7xl mx-auto w-full text-slate-900">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-datasea-blue">Kegiatan Terbaru</h2>
+            <h2 className="text-3xl font-bold text-slate-800">Kegiatan Terbaru</h2>
             <p className="text-slate-500 mt-2 text-lg">Agenda seru dan aktivitas komunitas.</p>
           </div>
           
-          {/* TOMBOL ATAS (Hanya Desktop) */}
           <Link href="/acara" className="hidden md:inline-flex px-5 py-2.5 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all">
             Lihat Semua Acara
           </Link>
@@ -100,11 +115,18 @@ export default async function Home() {
             {latestEvents.map((item, idx) => (
               <div key={item.id || idx} className={`group bg-white border border-slate-200 rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full ${acaraCardClass}`}>
                 <div className="h-48 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-slate-400 group-hover:from-blue-900 group-hover:to-slate-900 transition-colors relative overflow-hidden">
-                   <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                   <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%,transparent_100%)] bg-[length:20px_20px] opacity-20"></div>
+                   
                    <span className="absolute top-4 left-4 px-2 py-1 rounded bg-white/10 backdrop-blur-sm text-[10px] text-white uppercase font-bold tracking-wider border border-white/20">
-                     {item.penyelenggara || "Event"}
+                     {item.status_acara}
                    </span>
-                   <Calendar size={48} className="text-white/20"/>
+                   
+                   {item.poster_url ? (
+                     // eslint-disable-next-line @next/next/no-img-element
+                     <img src={item.poster_url} alt={item.nama_acara} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                   ) : (
+                     <Calendar size={48} className="text-white/20"/>
+                   )}
                 </div>
                 <div className="p-6 flex flex-col flex-grow">
                   <div className="flex items-center gap-4 text-xs text-slate-500 mb-3 font-medium">
@@ -129,14 +151,13 @@ export default async function Home() {
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-slate-100 text-slate-400 mb-4">
               <Calendar size={28} />
             </div>
-            <h3 className="text-lg font-bold text-slate-700">Belum ada acara yang akan datang</h3>
+            <h3 className="text-lg font-bold text-slate-700">Belum ada acara aktif</h3>
             <p className="text-slate-500 text-sm mt-1 max-w-md mx-auto">
-              Saat ini belum ada jadwal kegiatan baru yang dipublikasikan. Cek halaman arsip atau follow sosial media kami.
+              Saat ini belum ada jadwal kegiatan baru (Segera/Berlangsung/Akan Datang).
             </p>
           </div>
         )}
 
-        {/* TOMBOL BAWAH (Hanya Mobile) */}
         <div className="mt-8 text-center md:hidden">
           <Link href="/acara" className="px-5 py-3 rounded-lg border border-slate-200 text-sm font-bold text-slate-700 hover:bg-slate-50 transition-all w-full block">
             Lihat Semua Acara
@@ -210,66 +231,16 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* --- SECTION 5: FORMULIR KERJASAMA --- */}
+      {/* --- SECTION 5: CONTACT FORM --- */}
       <section id="contact-form" className="relative z-10 py-24 px-6 max-w-4xl mx-auto w-full scroll-mt-24 text-slate-900">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-datasea-blue mb-4">Ingin Berkolaborasi?</h2>
+          <h2 className="text-3xl font-bold text-slate-800 mb-4">Ingin Berkolaborasi?</h2>
           <p className="text-slate-600 max-w-xl mx-auto">
             Kami terbuka untuk kerjasama media partner, studi banding, atau proyek teknologi. 
             Silakan kirim pesan kepada kami.
           </p>
         </div>
-
-        <form className="bg-white p-8 md:p-10 rounded-3xl border border-slate-200 shadow-xl shadow-slate-200/50">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-semibold text-slate-700">Nama Lengkap</label>
-              <input 
-                type="text" 
-                id="name"
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
-                placeholder="Nama Anda"
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="instansi" className="text-sm font-semibold text-slate-700">Instansi / Organisasi</label>
-              <input 
-                type="text" 
-                id="instansi"
-                className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
-                placeholder="Asal Kampus/Perusahaan"
-              />
-            </div>
-          </div>
-          
-          <div className="space-y-2 mb-6">
-            <label htmlFor="email" className="text-sm font-semibold text-slate-700">Email</label>
-            <input 
-              type="email" 
-              id="email"
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
-              placeholder="contoh@email.com"
-            />
-          </div>
-
-          <div className="space-y-2 mb-8">
-            <label htmlFor="message" className="text-sm font-semibold text-slate-700">Pesan / Keperluan</label>
-            <textarea 
-              id="message"
-              rows={4}
-              className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all resize-none"
-              placeholder="Ceritakan rencana kolaborasi Anda..."
-            ></textarea>
-          </div>
-
-          <button 
-            type="button" 
-            className="w-full bg-datasea-blue text-white font-bold py-4 rounded-xl hover:bg-blue-900 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2"
-          >
-            <Send size={20} />
-            Kirim Pesan
-          </button>
-        </form>
+        <ContactForm />
       </section>
 
     </main>

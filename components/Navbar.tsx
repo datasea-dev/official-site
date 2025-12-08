@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image"; 
 import { usePathname } from "next/navigation";
@@ -11,19 +11,23 @@ export default function Navbar() {
 
   const closeMobileMenu = () => setIsOpen(false);
 
-  // Fungsi agar scroll ke form berjalan mulus
-  const scrollToContact = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    e.preventDefault();
-    const contactSection = document.getElementById('contact-form');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' });
-      closeMobileMenu();
+  // --- PERBAIKAN LOGIKA SCROLL ---
+  // Fungsi ini mengecek: Jika di Home -> Scroll Halus. Jika BUKAN Home -> Pindah halaman biasa.
+  const handleContactClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (pathname === "/") {
+      e.preventDefault(); // Cegah reload/jump kasar hanya jika di homepage
+      const contactSection = document.getElementById('contact-form');
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: 'smooth' });
+      }
     }
+    // Jika user ada di halaman lain (misal /acara), biarkan Link bekerja normal 
+    // mengarahkan ke "/#contact-form"
+    closeMobileMenu();
   };
 
   return (
     <nav
-      // UPDATE: Background selalu putih transparan (glassmorphism) + Border bawah
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-slate-200"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,15 +51,10 @@ export default function Navbar() {
 
           {/* --- DESKTOP MENU --- */}
           <div className="hidden md:flex items-center space-x-8">
-            {/* 1. Beranda */}
             <NavLink href="/" active={pathname === "/"}>Beranda</NavLink>
-
-            {/* 2. Program Kerja */}
             <NavLink href="/program_kerja" active={pathname === "/program_kerja"}>Program Kerja</NavLink>
 
-            {/* 3. D-Center (UPDATED: Bisa diklik) */}
             <div className="relative group">
-              {/* UBAH DARI BUTTON KE LINK */}
               <Link 
                 href="/d_center" 
                 className="flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-datasea-blue transition-colors py-2"
@@ -64,7 +63,6 @@ export default function Navbar() {
                 <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
               </Link>
               
-              {/* Dropdown Content */}
               <div className="absolute left-0 mt-0 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 pt-2">
                 <div className="bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden p-2">
                   <DropdownItem 
@@ -87,22 +85,19 @@ export default function Navbar() {
               </div>
             </div>
             
-            {/* 4. Acara */}
             <NavLink href="/acara" active={pathname === "/acara"}>Acara</NavLink>
-
-            {/* 5. Tentang Kami */}
             <NavLink href="/tentang_kami" active={pathname === "/tentang_kami"}>Tentang Kami</NavLink>
           </div>
 
-          {/* --- CTA BUTTON (Hubungi Kami) --- */}
+          {/* --- CTA BUTTON (PERBAIKAN DESKTOP) --- */}
           <div className="hidden md:flex">
-            <a
-              href="#contact-form"
-              onClick={scrollToContact}
+            <Link
+              href="/#contact-form" // Menggunakan /# agar bisa diakses dari halaman manapun
+              onClick={handleContactClick}
               className="bg-datasea-blue hover:bg-blue-900 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all shadow-md hover:shadow-lg cursor-pointer"
             >
               Hubungi Kami
-            </a>
+            </Link>
           </div>
 
           {/* --- MOBILE MENU BUTTON --- */}
@@ -128,26 +123,26 @@ export default function Navbar() {
             <MobileNavLink href="/" onClick={closeMobileMenu}>Beranda</MobileNavLink>
             <MobileNavLink href="/program_kerja" onClick={closeMobileMenu}>Program Kerja</MobileNavLink>
 
-            {/* D-Center Group */}
             <div className="py-2 border-y border-slate-100 my-1">
               <p className="px-4 text-xs font-bold text-slate-400 uppercase mb-2">Layanan D-Center</p>
               <div className="pl-2">
                 <MobileNavLink href="https://archive-datasea.vercel.app/" external onClick={closeMobileMenu}>Datasea Archive ↗</MobileNavLink>
-                <MobileNavLink href="/services/web-dev" onClick={closeMobileMenu}>Web Development</MobileNavLink>
-                <MobileNavLink href="/services/gaming" onClick={closeMobileMenu}>Gaming Services</MobileNavLink>
+                <MobileNavLink href="/d_center" onClick={closeMobileMenu}>Web Development</MobileNavLink>
+                <MobileNavLink href="/d_center" onClick={closeMobileMenu}>Gaming Services</MobileNavLink>
               </div>
             </div>
 
             <MobileNavLink href="/acara" onClick={closeMobileMenu}>Acara</MobileNavLink>
             <MobileNavLink href="/tentang_kami" onClick={closeMobileMenu}>Tentang Kami</MobileNavLink>
 
-            <a
-              href="#contact-form"
-              onClick={scrollToContact}
+            {/* --- CTA BUTTON (PERBAIKAN MOBILE) --- */}
+            <Link
+              href="/#contact-form"
+              onClick={handleContactClick}
               className="mt-4 w-full block text-center bg-datasea-blue text-white py-3 rounded-lg font-semibold hover:bg-blue-900 transition-colors"
             >
               Hubungi Kami
-            </a>
+            </Link>
           </div>
         </div>
       )}

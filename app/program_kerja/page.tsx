@@ -6,6 +6,8 @@ import {
 } from "lucide-react";
 import { getProgramKerjaData } from "@/lib/firestoreService"; 
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProgramKerja() {
   
   // 1. AMBIL DATA DARI FIREBASE
@@ -26,6 +28,16 @@ export default async function ProgramKerja() {
     { color: "cyan", icon: <Zap size={28} />, tag: "Workshop" },
   ];
 
+  // --- LOGIKA LAYOUT DINAMIS (AGENDA UNGGULAN) ---
+  const countBesar = prokerBesar.length;
+  // Jika < 4 item: Flex Center. Jika >= 4 item: Grid 4 Kolom.
+  const containerBesarClass = countBesar < 4 
+    ? "flex flex-wrap justify-center gap-6" 
+    : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6";
+  
+  // Kunci lebar kartu jika mode Flex agar proporsional
+  const cardBesarWrapperClass = countBesar < 4 ? "w-full max-w-[320px]" : "w-full";
+
   return (
     <main className="relative min-h-screen flex flex-col text-slate-900 overflow-hidden">
       {/* HERO SECTION */}
@@ -41,7 +53,7 @@ export default async function ProgramKerja() {
         </p>
       </section>
 
-      {/* --- PROKER BESAR (DATA DARI FIREBASE) --- */}
+      {/* --- PROKER BESAR (DATA DARI FIREBASE - LAYOUT DINAMIS) --- */}
       <section className="relative z-10 py-16 px-6 max-w-7xl mx-auto w-full">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-orange-600 text-xs font-bold uppercase mb-4 border border-orange-100">
@@ -53,23 +65,26 @@ export default async function ProgramKerja() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* CONTAINER DINAMIS: FLEX (CENTER) ATAU GRID */}
+        <div className={containerBesarClass}>
           {prokerBesar.length > 0 ? (
             prokerBesar.map((item, index) => {
               const style = styles[index % styles.length]; 
               return (
-                <FlagshipCard 
-                  key={item.id || index}
-                  title={item.nama_proker}
-                  desc={item.deskripsi} // <-- MENAMPILKAN DESKRIPSI
-                  icon={style.icon}
-                  color={style.color}
-                  tag={style.tag}
-                />
+                // Wrapper Kartu dengan lebar terkunci jika Flex
+                <div key={item.id || index} className={cardBesarWrapperClass}>
+                    <FlagshipCard 
+                      title={item.nama_proker}
+                      desc={item.deskripsi}
+                      icon={style.icon}
+                      color={style.color}
+                      tag={style.tag}
+                    />
+                </div>
               );
             })
           ) : (
-            <div className="col-span-full py-12 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+            <div className="col-span-full w-full py-12 text-center bg-slate-50 rounded-3xl border border-dashed border-slate-200">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 text-slate-400 mb-3">
                 <Rocket size={24} />
               </div>
@@ -80,7 +95,7 @@ export default async function ProgramKerja() {
         </div>
       </section>
 
-      {/* --- DIVISI ORGANISASI (PROKER KECIL DARI FIREBASE) --- */}
+      {/* --- DIVISI ORGANISASI (TETAP GRID 3 KOLOM) --- */}
       <section className="relative z-10 py-20 px-6 bg-slate-50 border-y border-slate-200">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -115,11 +130,14 @@ export default async function ProgramKerja() {
               icon={<ShoppingBag size={28} />} colorClass="bg-green-100 text-green-600"
               programs={getProkerByDivisi("EKRAF")}
             />
+            
+            {/* PERBAIKAN: Mengambil data baik dengan nama "Divisi IT" maupun "IT" */}
             <DivisionCard 
               name="Divisi IT" role="Technology & Dev" desc="Pengembangan website dan eksplorasi teknologi."
               icon={<Cpu size={28} />} colorClass="bg-cyan-100 text-cyan-600"
-              programs={getProkerByDivisi("Divisi IT")}
+              programs={[...getProkerByDivisi("Divisi IT"), ...getProkerByDivisi("IT")]}
             />
+            
             <DivisionCard 
               name="SATIR" role="Kominfo & Media" desc="Pusat informasi, desain grafis, dan jurnalistik."
               icon={<Palette size={28} />} colorClass="bg-pink-100 text-pink-600"
@@ -132,7 +150,7 @@ export default async function ProgramKerja() {
 
       {/* --- CTA SECTION --- */}
       <section className="relative z-10 py-24 px-6 text-center">
-        <div className="max-w-3xl mx-auto bg-datasea-blue rounded-3xl p-10 md:p-16 text-white shadow-2xl shadow-blue-900/40 overflow-hidden relative">
+        <div className="max-w-3xl mx-auto bg-blue-600 rounded-3xl p-10 md:p-16 text-white shadow-2xl shadow-blue-900/40 overflow-hidden relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl -ml-16 -mb-16"></div>
           <div className="relative z-10">
@@ -141,11 +159,11 @@ export default async function ProgramKerja() {
               Kami terbuka untuk kerjasama sponsorship, media partner, atau studi banding organisasi.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/#contact-form" className="px-8 py-3.5 bg-white text-datasea-blue font-bold rounded-xl hover:bg-blue-50 transition-all flex items-center justify-center gap-2">
+              <Link href="/#contact-form" className="px-8 py-3.5 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-all flex items-center justify-center gap-2">
                 <Rocket size={20}/>
                 Hubungi Humas
               </Link>
-              <Link href="/about" className="px-8 py-3.5 border border-white/30 text-white font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+              <Link href="/tentang_kami" className="px-8 py-3.5 border border-white/30 text-white font-bold rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2">
                 Lihat Profil Pengurus
               </Link>
             </div>
@@ -179,10 +197,9 @@ function FlagshipCard({ icon, title, desc, tag, color }: { icon: React.ReactNode
           {tag}
         </span>
       </div>
-      <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-datasea-blue transition-colors">
+      <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">
         {title}
       </h3>
-      {/* DESKRIPSI DI SINI */}
       <p className="text-sm text-slate-500 leading-relaxed flex-grow">
         {desc || "Deskripsi program kerja belum ditambahkan."}
       </p>
@@ -200,7 +217,7 @@ function DivisionCard({ name, role, desc, icon, colorClass, programs }: {
           {icon}
         </div>
         <div>
-          <h3 className="text-2xl font-bold text-datasea-blue">{name}</h3>
+          <h3 className="text-2xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{name}</h3>
           <p className="text-sm text-slate-500 font-medium">{role}</p>
         </div>
       </div>
@@ -217,9 +234,8 @@ function DivisionCard({ name, role, desc, icon, colorClass, programs }: {
                 <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 text-sm mb-0.5">{prog.proker}</h4>
-                {/* DESKRIPSI DI SINI */}
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <h4 className="font-bold text-slate-900 text-sm mb-0.5">{prog.nama_proker}</h4>
+                <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
                   {prog.deskripsi || "Deskripsi belum tersedia."}
                 </p>
               </div>
