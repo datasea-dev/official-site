@@ -1,34 +1,80 @@
-# Datasea - Official Website (Private Repository)
+<div align="center">
 
-Website resmi komunitas **Datasea** Universitas Teknologi Yogyakarta. Platform ini berfungsi sebagai pusat informasi kegiatan, program kerja, profil anggota, dan showcase layanan D-Center.
+  <img src="https://via.placeholder.com/150x150?text=DATASEA" alt="Datasea Logo" width="100" height="100" />
 
-⚠️ **REPOSITORY INI BERSIFAT PRIVATE**
-Harap tidak membagikan source code atau kunci akses (API Keys) kepada pihak yang tidak berkepentingan tanpa izin ketua komunitas.
+  # 🌊 Datasea Official Website
+
+  <p>
+    <strong>Pusat Ekosistem Digital Komunitas Sains Data<br>Universitas Teknologi Yogyakarta</strong>
+  </p>
+
+  <a href="https://nextjs.org">
+    <img src="https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js" alt="Next.js" />
+  </a>
+  <a href="https://www.typescriptlang.org/">
+    <img src="https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript" alt="TypeScript" />
+  </a>
+  <a href="https://tailwindcss.com/">
+    <img src="https://img.shields.io/badge/Tailwind_CSS-3.0-38bdf8?style=flat-square&logo=tailwind-css" alt="Tailwind CSS" />
+  </a>
+  <a href="https://firebase.google.com/">
+    <img src="https://img.shields.io/badge/Firebase-Firestore-ffca28?style=flat-square&logo=firebase" alt="Firebase" />
+  </a>
+  <a href="https://vercel.com/">
+    <img src="https://img.shields.io/badge/Deployed_on-Vercel-black?style=flat-square&logo=vercel" alt="Vercel" />
+  </a>
+
+</div>
+
+<br />
+
+> [!CAUTION]
+> **🔐 REPOSITORY PRIVATE / RAHASIA**
+> <br>
+> Source code ini mengandung logika bisnis dan konfigurasi internal komunitas Datasea. **Dilarang keras** membagikan, menyalin, atau mempublikasikan kode ini (terutama API Keys) ke publik tanpa izin tertulis dari Ketua Komunitas.
 
 ---
 
-## 🛠 Tech Stack
+## 📖 Tentang Project
 
-Proyek ini dibangun menggunakan teknologi modern:
-
-* **Framework:** [Next.js 14](https://nextjs.org/) (App Router)
-* **Language:** [TypeScript](https://www.typescriptlang.org/)
-* **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-* **Database:** [Firebase Firestore](https://firebase.google.com/)
-* **Icons:** [Lucide React](https://lucide.dev/)
+Website ini dibangun untuk menjadi wajah digital komunitas Datasea, memfasilitasi:
+- ✅ **Informasi Kegiatan:** Showcase acara, webinar, dan *meetup*.
+- ✅ **Manajemen Program Kerja:** Tracking proker unggulan dan divisi.
+- ✅ **Profil Organisasi:** Visi, misi, dan struktur tim (BPH, IT, Midtech, dll).
+- ✅ **Layanan D-Center:** Pusat layanan jasa digital.
+- ✅ **Admin Dashboard:** CMS terintegrasi untuk mengelola konten tanpa koding.
 
 ---
 
-## 🚀 Cara Menjalankan Project (Local Development)
+## 🛠️ Teknologi (Tech Stack)
 
-Ikuti langkah-langkah ini untuk menjalankan website di komputer Anda.
+Kami menggunakan *stack* modern untuk performa, skalabilitas, dan *Developer Experience (DX)* terbaik:
 
-### 1. Prerequisites (Syarat Awal)
-Pastikan Anda sudah menginstal:
-* [Node.js](https://nodejs.org/) (Versi 18 LTS atau terbaru)
-* [Git](https://git-scm.com/)
+| Kategori | Teknologi | Deskripsi |
+| :--- | :--- | :--- |
+| **Core** | **Next.js 14 (App Router)** | Framework React utama. |
+| **Language** | **TypeScript** | *Type-safety* untuk meminimalisir bug. |
+| **Styling** | **Tailwind CSS** | Utility-first CSS untuk styling cepat. |
+| **Database** | **Firebase Firestore** | NoSQL database real-time. |
+| **Auth** | **Firebase Auth** | Manajemen sesi login Admin. |
+| **Icons** | **Lucide React** | Ikon visual yang konsisten. |
+| **Security** | **Cloudflare Turnstile** | Proteksi spam pada form kontak. |
+
+---
+
+## 🚀 Panduan Instalasi (Local Development)
+
+Ikuti langkah ini untuk menjalankan proyek di komputer lokal Anda.
+
+### 1. Prasyarat (Prerequisites)
+Pastikan <i>environment</i> Anda sudah siap:
+* **Node.js** (Versi 18 LTS atau terbaru) - [Download](https://nodejs.org/)
+* **Git** - [Download](https://git-scm.com/)
+* **Code Editor** (VS Code direkomendasikan).
 
 ### 2. Clone Repository
+Gunakan URL HTTPS atau SSH (pastikan akun GitHub Anda sudah diundang ke organisasi `datasea-dev`).
+
 ```bash
-git clone [https://github.com/USERNAME_GITHUB_ANDA/datasea-official-site.git](https://github.com/USERNAME_GITHUB_ANDA/datasea-official-site.git)
-cd datasea-official-site
+git clone [https://github.com/datasea-dev/official-site.git](https://github.com/datasea-dev/official-site.git)
+cd official-site
