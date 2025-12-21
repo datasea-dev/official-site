@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-// Menambahkan import 'Youtube'
 import { Instagram, Linkedin, Github, Mail, MessageCircle, Wrench, ExternalLink, GraduationCap, Building2, HeartHandshake, Heart, Youtube } from "lucide-react";
 
 // Komponen Custom TikTok
@@ -112,7 +111,6 @@ export default function Footer() {
                 <div className="flex flex-wrap gap-2">
                   <SocialLink href="https://instagram.com/datasea.uty" icon={<Instagram size={18} />} />
                   <SocialLink href="https://tiktok.com/@datasea" icon={<TiktokIcon size={18} />} />
-                  {/* Penambahan YouTube */}
                   <SocialLink href="https://www.youtube.com/@KomunitasDataSEA" icon={<Youtube size={18} />} />
                   <SocialLink href="https://linkedin.com/company/datasea" icon={<Linkedin size={18} />} />
                   <SocialLink href="https://github.com/datasea-dev" icon={<Github size={18} />} />
@@ -140,25 +138,35 @@ export default function Footer() {
 
               <div className="h-px bg-slate-700/50 mx-1"></div>
 
-              <a href="https://wa.me/6281234567890" target="_blank" className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-white/5 transition-all group">
+              {/* Link Humas dengan Pesan Otomatis */}
+              <a 
+                href="https://wa.me/6282227034973?text=Hallo%2C%20Saya%20ingin%20bertanya%20tentang%20Komunitas%20Datasea%20%3F" 
+                target="_blank" 
+                className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-white/5 transition-all group"
+              >
                 <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-400 group-hover:bg-green-500 group-hover:text-white transition-colors flex-shrink-0">
                   <MessageCircle size={16} />
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide group-hover:text-slate-400">Humas / Admin</span>
-                  <span className="text-xs font-medium text-slate-200 group-hover:text-white truncate">+62 812-3456-7890</span>
+                  <span className="text-xs font-medium text-slate-200 group-hover:text-white truncate">+62 822-2703-4973</span>
                 </div>
               </a>
 
               <div className="h-px bg-slate-700/50 mx-1"></div>
 
-              <a href="https://wa.me/6289876543210" target="_blank" className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-white/5 transition-all group">
+              {/* Link IT Support dengan Pesan Otomatis */}
+              <a 
+                href="https://wa.me/6285157399150?text=Hallo%2C%20Saya%20ingin%20melaporkan%20permasalah%20webiste%20%3F" 
+                target="_blank" 
+                className="flex items-center gap-3 p-1.5 rounded-lg hover:bg-white/5 transition-all group"
+              >
                 <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400 group-hover:bg-orange-500 group-hover:text-white transition-colors flex-shrink-0">
                   <Wrench size={16} />
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide group-hover:text-slate-400">IT Support (Bug)</span>
-                  <span className="text-xs font-medium text-slate-200 group-hover:text-white truncate">+62 898-7654-3210</span>
+                  <span className="text-xs font-medium text-slate-200 group-hover:text-white truncate">+62 851-5739-9150</span>
                 </div>
               </a>
 
