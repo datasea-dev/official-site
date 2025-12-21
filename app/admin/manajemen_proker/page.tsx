@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { 
   Briefcase, Plus, Search, Edit, Trash2, X, Save, 
-  Loader2, CheckCircle, AlertCircle, ChevronDown, Filter, LayoutGrid, Calendar, AlertTriangle,
+  Loader2, CheckCircle, AlertCircle, ChevronDown, Filter, LayoutGrid, AlertTriangle,
   ChevronLeft, ChevronRight 
 } from "lucide-react";
 import { auth } from "@/lib/firebase";
@@ -22,7 +22,7 @@ export default function ManajemenProkerPage() {
   
   // --- PAGINATION STATE ---
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8; // Menampilkan 8 kartu per halaman
+  const itemsPerPage = 8; 
 
   // State for Form Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -94,7 +94,15 @@ export default function ManajemenProkerPage() {
 
   const handleOpenEdit = (item: ProgramKerjaData) => {
     setIsEditing(true);
-    setFormData({ ...item });
+    
+    // --- FITUR AUTO-UPDATE NAMA DIVISI LAMA ---
+    // Jika data lama masih pakai "SATIR" atau "Divisi IT", kita ubah otomatis di form
+    // supaya saat admin klik Simpan, datanya terupdate ke nama baru.
+    let fixedDivisi = item.divisi;
+    if (fixedDivisi === "Divisi IT") fixedDivisi = "IT";
+    if (fixedDivisi === "SATIR") fixedDivisi = "MIDTECH";
+
+    setFormData({ ...item, divisi: fixedDivisi });
     setOldKategori(item.kategori); 
     setIsModalOpen(true);
   };
@@ -152,10 +160,17 @@ export default function ManajemenProkerPage() {
     }
   };
 
-  // --- LOGIC FILTER & PAGINATION ---
+  // --- LOGIC FILTER & PAGINATION (DIPERBAIKI UNTUK DATA LAMA) ---
   const filteredProkers = prokers.filter((item) => {
     const matchSearch = item.nama_proker.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchDivisi = filterDivisi === "Semua" || item.divisi === filterDivisi;
+    
+    // Perbaikan Logika Filter: Tangkap juga nama divisi lama
+    const matchDivisi = 
+      filterDivisi === "Semua" || 
+      item.divisi === filterDivisi ||
+      (filterDivisi === "IT" && item.divisi === "Divisi IT") ||      // Legacy Support
+      (filterDivisi === "MIDTECH" && item.divisi === "SATIR");       // Legacy Support
+
     return matchSearch && matchDivisi;
   });
 
@@ -257,8 +272,8 @@ export default function ManajemenProkerPage() {
               <option value="PSDM">PSDM</option>
               <option value="HUMAS">HUMAS</option>
               <option value="EKRAF">EKRAF</option>
-              <option value="Divisi IT">IT</option>
-              <option value="SATIR">SATIR</option>
+              <option value="IT">IT</option>
+              <option value="MIDTECH">MIDTECH</option>
             </select>
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16}/>
           </div>
@@ -334,7 +349,6 @@ export default function ManajemenProkerPage() {
              <h3 className="text-slate-900 font-bold text-lg">Tidak ada program kerja</h3>
              <p className="text-slate-500 text-sm mt-1 mb-6">Coba ubah kata kunci pencarian atau filter divisi.</p>
              
-             {/* Feature: Tombol Hapus Filter */}
              {(searchTerm !== "" || filterDivisi !== "Semua") && (
                 <button 
                   onClick={() => {
@@ -420,8 +434,8 @@ export default function ManajemenProkerPage() {
                       <option value="PSDM">PSDM</option>
                       <option value="HUMAS">HUMAS</option>
                       <option value="EKRAF">EKRAF</option>
-                      <option value="Divisi IT">Divisi IT</option>
-                      <option value="SATIR">SATIR</option>
+                      <option value="IT">IT</option>
+                      <option value="MIDTECH">MIDTECH</option>
                     </select>
                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16}/>
                   </div>
@@ -514,7 +528,7 @@ export default function ManajemenProkerPage() {
                 Batal
               </button>
               <button 
-                onClick={confirmDelete}
+                onClick={confirmDelete} 
                 disabled={isDeleting}
                 className="flex-1 py-2.5 bg-red-600 text-white rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20"
               >

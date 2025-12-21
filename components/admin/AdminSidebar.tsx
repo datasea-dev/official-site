@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { 
-  LayoutDashboard, Calendar, Briefcase, Users, MessageSquare, LogOut, X 
+  LayoutDashboard, Calendar, Briefcase, Users, MessageSquare, LogOut, X, 
+  Target // <-- Import icon Target untuk Visi Misi
 } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
@@ -21,6 +22,8 @@ const menuItems = [
   { name: "Manajemen Acara", href: "/admin/manajemen_acara", icon: Calendar },
   { name: "Program Kerja", href: "/admin/manajemen_proker", icon: Briefcase },
   { name: "Anggota Tim", href: "/admin/manajemen_tim", icon: Users },
+  // --- MENU BARU DITAMBAHKAN DI SINI ---
+  { name: "Visi & Misi", href: "/admin/visi_misi", icon: Target }, 
   { name: "Pesan Masuk", href: "/admin/manajemen_pesan", icon: MessageSquare },
 ];
 

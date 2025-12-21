@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Instagram, Linkedin, Github, Mail, MessageCircle, Wrench, ExternalLink, GraduationCap, Building2, HeartHandshake } from "lucide-react";
+// Menambahkan import 'Youtube'
+import { Instagram, Linkedin, Github, Mail, MessageCircle, Wrench, ExternalLink, GraduationCap, Building2, HeartHandshake, Heart, Youtube } from "lucide-react";
 
 // Komponen Custom TikTok
 const TiktokIcon = ({ size = 16, className = "" }: { size?: number, className?: string }) => (
@@ -70,7 +71,6 @@ export default function Footer() {
                       <span className="truncate">Prodi Sains Data</span>
                     </a>
                   </li>
-                  {/* --- MENU BARU: RELAWAN --- */}
                   <li>
                     <Link href="/relawan" className="hover:text-white hover:translate-x-1 transition-all flex items-center gap-2 group">
                       <HeartHandshake size={14} className="text-blue-500 group-hover:text-white transition-colors flex-shrink-0"/>
@@ -112,6 +112,8 @@ export default function Footer() {
                 <div className="flex flex-wrap gap-2">
                   <SocialLink href="https://instagram.com/datasea.uty" icon={<Instagram size={18} />} />
                   <SocialLink href="https://tiktok.com/@datasea" icon={<TiktokIcon size={18} />} />
+                  {/* Penambahan YouTube */}
+                  <SocialLink href="https://www.youtube.com/@KomunitasDataSEA" icon={<Youtube size={18} />} />
                   <SocialLink href="https://linkedin.com/company/datasea" icon={<Linkedin size={18} />} />
                   <SocialLink href="https://github.com/datasea-dev" icon={<Github size={18} />} />
                 </div>
@@ -170,8 +172,8 @@ export default function Footer() {
           <p>
             &copy; {currentYear} <span className="text-slate-300 font-medium">DATASEA Community</span>. All rights reserved.
           </p>
-          <p>
-            Dibuat oleh <span className="text-slate-300 font-medium">DIVISI IT</span>
+          <p className="flex items-center justify-center gap-1">
+            Dibuat dengan <Heart size={12} className="text-red-500 fill-red-500" /> oleh <span className="text-slate-300 font-medium">DIVISI IT</span>
           </p>
         </div>
       </div>

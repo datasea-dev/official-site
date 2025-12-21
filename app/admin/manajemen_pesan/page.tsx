@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react"; // PENTING: Ada import Suspense
+import { useState, useEffect, Suspense } from "react"; 
 import { 
-  MessageSquare, Search, Trash2, CheckCircle, Clock, MailOpen, Filter, Loader2, Eye, X, User, Building, Mail, ChevronLeft, ChevronRight, ChevronDown, AlertTriangle 
-} from "lucide-react";
+  MessageSquare, Search, Trash2, CheckCircle, Clock, MailOpen, Filter, Loader2, Eye, X, User, Building, Mail, ChevronLeft, ChevronRight, ChevronDown, AlertTriangle, Phone 
+} from "lucide-react"; 
 import { auth } from "@/lib/firebase";
 import { getMessages, deleteMessage, updateMessageStatus, MessageData } from "@/lib/firestoreService";
 import { useRouter, useSearchParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 
-// --- KOMPONEN KONTEN UTAMA (LOGIKA ADA DI SINI) ---
+// --- KOMPONEN KONTEN UTAMA ---
 function PesanContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -40,7 +40,6 @@ function PesanContent() {
       if (!u) router.push("/admin/login");
       else { 
         const data = await getMessages(); 
-        // Sort by date descending (terbaru diatas)
         data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         setMessages(data); 
         setLoading(false); 
@@ -62,7 +61,6 @@ function PesanContent() {
     }
   }, [messages, searchParams]);
 
-  // Auto-dismiss alert
   useEffect(() => {
     if (alert?.show) {
       const timer = setTimeout(() => setAlert(null), 3000);
@@ -74,7 +72,6 @@ function PesanContent() {
       await updateMessageStatus(id, st); 
       setMessages(p => p.map(m => m.id === id ? { ...m, status: st } : m));
       
-      // Update selected message state if open
       if(selectedMessage && selectedMessage.id === id) {
           setSelectedMessage(prev => prev ? {...prev, status: st} : null);
       }
@@ -118,7 +115,6 @@ function PesanContent() {
 
   useEffect(() => setCurrentPage(1), [filter, searchTerm]);
 
-  // Helper Badge
   const StatusBadge = ({ status }: { status: string }) => {
     const color = status === 'Baru' ? 'bg-blue-100 text-blue-700' : status === 'Selesai' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600';
     return <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${color}`}>{status}</span>
@@ -129,14 +125,13 @@ function PesanContent() {
   return (
     <main className="p-4 md:p-8 flex flex-col min-h-screen relative">
         
-        {/* Toast Alert */}
         {alert?.show && (
             <div className={`fixed top-6 right-6 z-[100] px-6 py-3 rounded-xl shadow-xl font-bold text-white animate-in slide-in-from-top-5 fade-in duration-300 ${alert.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
                 {alert.message}
             </div>
         )}
 
-        {/* Header Responsive */}
+        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
@@ -146,7 +141,7 @@ function PesanContent() {
           </div>
         </div>
 
-        {/* Toolbar Responsive (Search & Filter) */}
+        {/* Toolbar */}
         <div className="sticky top-4 z-30 bg-white/80 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/60 shadow-lg shadow-slate-200/50 flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-0 mb-8 ring-1 ring-slate-900/5">
             <div className="relative flex-1 group bg-white md:bg-transparent rounded-xl md:rounded-none border border-slate-100 md:border-none">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20}/>
@@ -179,7 +174,7 @@ function PesanContent() {
 
         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex-1 flex flex-col">
           
-          {/* --- TAMPILAN MOBILE (CARD LIST) --- */}
+          {/* --- TAMPILAN MOBILE --- */}
           <div className="block md:hidden">
             {currentMsgs.map(m => (
               <div key={m.id} className={`p-5 border-b border-slate-100 flex flex-col gap-3 ${m.status==='Baru'?'bg-blue-50/20':''}`}>
@@ -187,6 +182,7 @@ function PesanContent() {
                     <div>
                       <h4 className="font-bold text-slate-800 text-sm">{m.name}</h4>
                       <p className="text-xs text-slate-500 mt-0.5">{m.instansi}</p>
+                      {/* BAGIAN TELEPON DIHAPUS DARI SINI */}
                     </div>
                     <span className="text-[10px] text-slate-400 font-medium bg-slate-50 px-2 py-1 rounded-lg">
                       {new Date(m.createdAt).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'})}
@@ -234,6 +230,7 @@ function PesanContent() {
                             <td className="px-6 py-4 align-top">
                                 <p className="font-bold text-slate-700">{m.name}</p>
                                 <p className="text-xs text-slate-500">{m.instansi}</p>
+                                {/* BAGIAN TELEPON DIHAPUS DARI SINI */}
                             </td>
                             <td className="px-6 py-4 align-top">
                                 <p className="line-clamp-2 text-slate-600">{m.message}</p>
@@ -271,31 +268,31 @@ function PesanContent() {
             </table>
           </div>
 
-          {/* Empty State & Reset Filter */}
+          {/* Empty State */}
           {currentMsgs.length === 0 && (
-             <div className="flex flex-col items-center justify-center py-20 text-center px-4">
-                 <div className="p-4 bg-slate-50 rounded-full mb-4">
-                    <MailOpen size={40} className="text-slate-300"/>
-                 </div>
-                 <p className="text-slate-500 mb-6">Tidak ada pesan ditemukan.</p>
-                 {(searchTerm !== "" || filter !== "Semua") && (
-                    <button 
-                      onClick={() => { setSearchTerm(""); setFilter("Semua"); }}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10"
-                    >
-                      <X size={14}/> Hapus Filter & Pencarian
-                    </button>
-                 )}
-             </div>
+              <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+                  <div className="p-4 bg-slate-50 rounded-full mb-4">
+                     <MailOpen size={40} className="text-slate-300"/>
+                  </div>
+                  <p className="text-slate-500 mb-6">Tidak ada pesan ditemukan.</p>
+                  {(searchTerm !== "" || filter !== "Semua") && (
+                     <button 
+                       onClick={() => { setSearchTerm(""); setFilter("Semua"); }}
+                       className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10"
+                     >
+                       <X size={14}/> Hapus Filter & Pencarian
+                     </button>
+                  )}
+              </div>
           )}
           
           {/* Pagination */}
           <div className="p-4 border-t flex justify-between items-center bg-slate-50 mt-auto">
-             <span className="text-xs text-slate-500">Hal {currentPage} dari {totalPages||1}</span>
-             <div className="flex gap-2">
-                <button onClick={()=>setCurrentPage(p=>Math.max(p-1,1))} disabled={currentPage===1} className="p-2 border bg-white rounded hover:bg-slate-100 disabled:opacity-50"><ChevronLeft size={16}/></button>
-                <button onClick={()=>setCurrentPage(p=>Math.min(p+1,totalPages))} disabled={currentPage===totalPages||totalPages===0} className="p-2 border bg-white rounded hover:bg-slate-100 disabled:opacity-50"><ChevronRight size={16}/></button>
-             </div>
+              <span className="text-xs text-slate-500">Hal {currentPage} dari {totalPages||1}</span>
+              <div className="flex gap-2">
+                 <button onClick={()=>setCurrentPage(p=>Math.max(p-1,1))} disabled={currentPage===1} className="p-2 border bg-white rounded hover:bg-slate-100 disabled:opacity-50"><ChevronLeft size={16}/></button>
+                 <button onClick={()=>setCurrentPage(p=>Math.min(p+1,totalPages))} disabled={currentPage===totalPages||totalPages===0} className="p-2 border bg-white rounded hover:bg-slate-100 disabled:opacity-50"><ChevronRight size={16}/></button>
+              </div>
           </div>
         </div>
 
@@ -310,7 +307,11 @@ function PesanContent() {
                             <div className="p-3 bg-slate-50 rounded-xl"><p className="text-xs text-slate-400 font-bold uppercase">Pengirim</p><p className="font-bold text-slate-800">{selectedMessage.name}</p></div>
                             <div className="p-3 bg-slate-50 rounded-xl"><p className="text-xs text-slate-400 font-bold uppercase">Instansi</p><p className="font-bold text-slate-800">{selectedMessage.instansi}</p></div>
                         </div>
-                        <div className="p-3 bg-slate-50 rounded-xl"><p className="text-xs text-slate-400 font-bold uppercase">Email</p><p className="font-bold text-blue-600">{selectedMessage.email}</p></div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="p-3 bg-slate-50 rounded-xl"><p className="text-xs text-slate-400 font-bold uppercase">Email</p><p className="font-bold text-blue-600">{selectedMessage.email}</p></div>
+                            {/* Kotak Telepon TETAP ADA di Modal */}
+                            <div className="p-3 bg-slate-50 rounded-xl"><p className="text-xs text-slate-400 font-bold uppercase">Telepon / WA</p><p className="font-bold text-slate-800 flex items-center gap-2"><Phone size={14}/> {selectedMessage.phone || "-"}</p></div>
+                        </div>
                         <div className="p-4 border rounded-xl bg-slate-50/50"><p className="whitespace-pre-wrap text-slate-700">{selectedMessage.message}</p></div>
                     </div>
                     {selectedMessage.status !== 'Selesai' && (
@@ -356,7 +357,7 @@ function PesanContent() {
   );
 }
 
-// --- BAGIAN INI WAJIB UNTUK MENGHINDARI ERROR BUILD "useSearchParams" ---
+// --- WAJIB UNTUK MENGHINDARI ERROR BUILD "useSearchParams" ---
 export default function PesanPage() {
   return (
     <Suspense fallback={

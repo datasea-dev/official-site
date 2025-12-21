@@ -34,7 +34,7 @@ export interface ProgramKerjaData {
   deskripsi: string;
   divisi: string;
   status: "Terlaksana" | "Berjalan" | "Rencana";
-  kategori: "Besar" | "Divisi"; // Kita butuh ini untuk logic di frontend admin
+  kategori: "Besar" | "Divisi"; 
 }
 
 export interface TimData {
@@ -57,6 +57,7 @@ export interface VisiMisiData {
 export interface MessageData {
   id: string;
   name: string;
+  phone: string; // <-- Tambah bidang nomor telepon
   instansi: string;
   email: string;
   message: string;
@@ -80,13 +81,11 @@ export const updateAcara = async (id: string, data: any) => updateDoc(doc(db, "a
 export const deleteAcara = async (id: string) => deleteDoc(doc(db, "acara", id)).then(() => true).catch(() => false);
 
 // ==========================================
-// 3. LAYANAN: PROGRAM KERJA (UPDATED: proker_besar & proker_divisi)
+// 3. LAYANAN: PROGRAM KERJA
 // ==========================================
 
-// Helper: Tentukan nama koleksi berdasarkan kategori
 const getProkerCollection = (kategori: "Besar" | "Divisi") => kategori === "Besar" ? "proker_besar" : "proker_divisi";
 
-// KHUSUS PUBLIC (Mengambil dari DUA koleksi terpisah)
 export const getProgramKerjaData = async () => {
   try {
     const besarSnap = await getDocs(collection(db, "proker_besar"));
@@ -102,7 +101,6 @@ export const getProgramKerjaData = async () => {
   }
 };
 
-// KHUSUS ADMIN (Gabung semua untuk ditampilkan di tabel/grid)
 export const getAllProkers = async (): Promise<ProgramKerjaData[]> => {
   try {
     const { prokerBesar, prokerDivisi } = await getProgramKerjaData();
@@ -110,7 +108,6 @@ export const getAllProkers = async (): Promise<ProgramKerjaData[]> => {
   } catch (error) { return []; }
 };
 
-// CRUD PROKER (Harus cek kategori untuk tahu masuk koleksi mana)
 export const addProker = async (data: Omit<ProgramKerjaData, 'id'>) => {
   try {
     const collName = getProkerCollection(data.kategori);
@@ -121,13 +118,8 @@ export const addProker = async (data: Omit<ProgramKerjaData, 'id'>) => {
 
 export const updateProker = async (id: string, data: Partial<ProgramKerjaData>, oldKategori: "Besar" | "Divisi") => {
   try {
-    // Cek jika kategori berubah, kita harus pindahkan dokumen (Delete -> Add)
-    // Tapi untuk simplifikasi, kita update di koleksi aslinya dulu.
-    // NOTE: Agar aman, parameter 'oldKategori' wajib dikirim dari frontend.
     const collName = getProkerCollection(oldKategori); 
     
-    // Jika kategori berubah, ini jadi rumit (Pindah Koleksi). 
-    // Solusi cepat: Hapus lama, buat baru.
     if (data.kategori && data.kategori !== oldKategori) {
        await deleteDoc(doc(db, collName, id));
        await addDoc(collection(db, getProkerCollection(data.kategori)), data);
@@ -148,12 +140,12 @@ export const deleteProker = async (id: string, kategori: "Besar" | "Divisi") => 
 };
 
 // ==========================================
-// 4. LAYANAN: TIM (UPDATED: tim_datasea)
+// 4. LAYANAN: TIM
 // ==========================================
 
 export const getTimData = async (): Promise<TimData[]> => {
   try {
-    const querySnapshot = await getDocs(collection(db, "tim_datasea")); // NAMA KOLEKSI BARU
+    const querySnapshot = await getDocs(collection(db, "tim_datasea")); 
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as TimData[];
   } catch (error) { return []; }
 };
@@ -162,7 +154,6 @@ export const addTim = async (data: any) => addDoc(collection(db, "tim_datasea"),
 export const updateTim = async (id: string, data: any) => updateDoc(doc(db, "tim_datasea", id), data).then(() => true).catch(() => false);
 export const deleteTim = async (id: string) => deleteDoc(doc(db, "tim_datasea", id)).then(() => true).catch(() => false);
 
-// Visi Misi
 export const getVisiMisiData = async (): Promise<VisiMisiData | null> => {
   try {
     const querySnapshot = await getDocs(collection(db, "visi_misi"));
@@ -172,18 +163,77 @@ export const getVisiMisiData = async (): Promise<VisiMisiData | null> => {
 };
 
 // ==========================================
-// 5. LAYANAN: PESAN (messages) - Tetap
+// 5. LAYANAN: PESAN (Update: "pesan" collection with phone)
 // ==========================================
-export const sendMessage = async (data: any) => addDoc(collection(db, "messages"), { ...data, status: "Baru", createdAt: serverTimestamp() }).then(res => ({ success: true, id: res.id }));
+
+export const sendMessage = async (data: any) => {
+  return addDoc(collection(db, "pesan"), { 
+    ...data, 
+    status: "Baru", 
+    createdAt: serverTimestamp() 
+  })
+  .then(res => ({ success: true, id: res.id }))
+  .catch(err => ({ success: false, error: err }));
+};
+
 export const getMessages = async (): Promise<MessageData[]> => {
   try {
-    const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
-    const snap = await getDocs(q);
-    return snap.docs.map(doc => {
+    const querySnapshot = await getDocs(collection(db, "pesan"));
+    
+    return querySnapshot.docs.map((doc) => {
         const d = doc.data();
-        return { id: doc.id, ...d, createdAt: d.createdAt?.toDate().toISOString() || new Date().toISOString() } as MessageData;
-    });
-  } catch (e) { return []; }
+        return {
+            id: doc.id,
+            // Fallback agar data lama tidak error
+            name: d.name || "Tanpa Nama",
+            phone: d.phone || "-", // <-- Map bidang phone
+            instansi: d.instansi || "-",
+            email: d.email || "-",
+            message: d.message || "",
+            status: d.status || "Baru",
+            // Konversi Timestamp Firebase ke ISO String
+            createdAt: d.createdAt?.toDate ? d.createdAt.toDate().toISOString() : d.createdAt || new Date().toISOString(),
+        };
+    }) as MessageData[];
+
+  } catch (e) { 
+    console.error("Gagal mengambil pesan:", e);
+    return []; 
+  }
 };
-export const updateMessageStatus = async (id: string, status: any) => updateDoc(doc(db, "messages", id), { status }).then(() => true).catch(() => false);
-export const deleteMessage = async (id: string) => deleteDoc(doc(db, "messages", id)).then(() => true).catch(() => false);
+
+export const updateMessageStatus = async (id: string, status: string) => {
+  try {
+      await updateDoc(doc(db, "pesan", id), { status });
+      return true;
+  } catch (e) {
+      console.error("Gagal update status:", e);
+      return false;
+  }
+};
+
+export const deleteMessage = async (id: string) => {
+  try {
+      await deleteDoc(doc(db, "pesan", id));
+      return true;
+  } catch (e) {
+      console.error("Gagal hapus pesan:", e);
+      return false;
+  }
+};
+
+// ==========================================
+// 6. LAYANAN: VISI MISI (Update)
+// ==========================================
+
+// Fungsi update visi misi
+export const updateVisiMisi = async (id: string, data: Partial<VisiMisiData>) => {
+  try {
+    // Kita gunakan updateDoc untuk mengubah data yang ada
+    await updateDoc(doc(db, "visi_misi", id), data);
+    return { success: true };
+  } catch (error) {
+    console.error("Gagal update visi misi:", error);
+    return { success: false, error };
+  }
+};

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { 
   MessageSquare, Calendar, Users, ArrowUpRight, Clock, Eye, Loader2 
-} from "lucide-react";
+} from "lucide-react"; // Phone dihapus dari import karena tidak dipakai di list luar
 import { auth } from "@/lib/firebase";
 import { 
   getMessages, getAcaraData, getTimData, MessageData 
@@ -153,24 +153,26 @@ export default function DashboardPage() {
                 
                 {/* 1. Avatar & Identitas */}
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                   <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${msg.status === 'Baru' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>
-                      {msg.name.charAt(0).toUpperCase()}
-                   </div>
-                   <div className="min-w-0">
-                      <h4 className={`text-sm text-slate-800 truncate ${msg.status === 'Baru' ? 'font-bold' : 'font-medium'}`}>{msg.name}</h4>
-                      <p className="text-xs text-slate-500 truncate">{msg.instansi}</p>
-                   </div>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${msg.status === 'Baru' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>
+                      {(msg.name || "?").charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className={`text-sm text-slate-800 truncate ${msg.status === 'Baru' ? 'font-bold' : 'font-medium'}`}>
+                        {msg.name || "Tanpa Nama"}
+                      </h4>
+                      <p className="text-xs text-slate-500 truncate">{msg.instansi || "-"}</p>
+                      {/* NOMOR TELEPON DIHAPUS DARI SINI */}
+                    </div>
                 </div>
 
-                {/* 2. Cuplikan Pesan (Hidden di layar sangat kecil, muncul di tablet+) */}
+                {/* 2. Cuplikan Pesan */}
                 <div className="hidden sm:block flex-1 min-w-0">
-                   <p className="text-sm text-slate-600 line-clamp-1">{msg.message}</p>
+                    <p className="text-sm text-slate-600 line-clamp-1">{msg.message}</p>
                 </div>
 
                 {/* 3. Meta Data & Aksi */}
                 <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto mt-1 sm:mt-0 pl-13 sm:pl-0">
-                   {/* Info Status & Waktu */}
-                   <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:gap-0.5">
+                    <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:gap-0.5">
                       <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                         msg.status === 'Baru' ? 'bg-blue-100 text-blue-600' : 
                         msg.status === 'Selesai' ? 'bg-green-100 text-green-600' : 
@@ -181,15 +183,14 @@ export default function DashboardPage() {
                       <span className="text-[10px] text-slate-400 flex items-center gap-1">
                         <Clock size={10} /> {formatDate(msg.createdAt)}
                       </span>
-                   </div>
+                    </div>
 
-                   {/* Tombol Lihat Detail */}
-                   <button 
+                    <button 
                       onClick={() => handleOpenDetail(msg.id)}
                       className="p-2 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-200 transition-all shadow-sm"
-                   >
+                    >
                       <Eye size={16} />
-                   </button>
+                    </button>
                 </div>
 
               </div>

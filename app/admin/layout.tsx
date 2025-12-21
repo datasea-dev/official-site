@@ -1,10 +1,12 @@
 "use client";
 
-import AdminSidebar from "@/components/AdminSidebar";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu } from "lucide-react"; 
 import Image from "next/image";
+// 1. Import SessionGuard di sini
+import AdminSidebar from "@/components/admin/AdminSidebar"; 
+import SessionGuard from "@/components/admin/SessionGuard";
 
 export default function AdminLayout({
   children,
@@ -14,7 +16,7 @@ export default function AdminLayout({
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Halaman Login: Render Polos (Tanpa Layout Admin)
+  // Halaman Login: Render Polos (Tanpa Layout Admin & Tanpa SessionGuard)
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
@@ -29,9 +31,9 @@ export default function AdminLayout({
 
       {/* --- HEADER KHUSUS MOBILE --- */}
       <div className="md:hidden flex items-center justify-between p-4 bg-gradient-to-r from-[#0f172a] to-[#1e293b] text-white sticky top-0 z-30 shadow-md">
-         
-         {/* POSISI KIRI: Logo & Tulisan */}
-         <div className="flex items-center gap-3">
+          
+          {/* POSISI KIRI: Logo & Tulisan */}
+          <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center overflow-hidden shadow-sm">
                <Image src="/logo-datasea.png" alt="DS" width={32} height={32} className="object-cover"/>
             </div>
@@ -39,16 +41,16 @@ export default function AdminLayout({
               <span className="font-bold text-lg block leading-none">Admin Panel</span>
               <span className="text-[10px] text-slate-300 uppercase tracking-wider">Datasea</span>
             </div>
-         </div>
+          </div>
 
-         {/* POSISI KANAN: Tombol Hamburger */}
-         <button 
-           onClick={() => setIsSidebarOpen(true)}
-           className="p-2 rounded-lg hover:bg-white/10 transition-colors focus:ring-2 focus:ring-blue-500"
-           aria-label="Buka Menu"
-         >
-           <Menu size={26} />
-         </button>
+          {/* POSISI KANAN: Tombol Hamburger */}
+          <button 
+            onClick={() => setIsSidebarOpen(true)}
+            className="p-2 rounded-lg hover:bg-white/10 transition-colors focus:ring-2 focus:ring-blue-500"
+            aria-label="Buka Menu"
+          >
+            <Menu size={26} />
+          </button>
 
       </div>
 
@@ -60,6 +62,10 @@ export default function AdminLayout({
 
       {/* --- KONTEN UTAMA --- */}
       <div className="flex-1 md:ml-64 relative w-full">
+        
+        {/* 2. Pasang SessionGuard di sini (Di dalam konten admin) */}
+        <SessionGuard />
+        
         {children}
       </div>
 

@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { 
-  Users, Calendar, Brain, Laptop, Presentation, ArrowRight, 
   Target, Award, Rocket, Gavel, UserCheck, Megaphone, ShoppingBag,
-  Cpu, Palette, Star, Zap
+  Cpu, Palette, Star, Zap, Brain, Presentation, Laptop, Calendar 
 } from "lucide-react";
 import { getProgramKerjaData } from "@/lib/firestoreService"; 
+import FlagshipCard from "@/components/FlagshipCard"; 
 
 export const dynamic = 'force-dynamic';
 
@@ -19,26 +19,22 @@ export default async function ProgramKerja() {
   };
 
   // --- LOGIKA AUTO-STYLE UNTUK PROKER BESAR ---
+  // PERUBAHAN DI SINI: Semua tag diganti menjadi "Unggulan"
   const styles = [
     { color: "orange", icon: <Brain size={28} />, tag: "Unggulan" },
-    { color: "purple", icon: <Presentation size={28} />, tag: "Event" },
-    { color: "blue", icon: <Laptop size={28} />, tag: "Edukasi" },
-    { color: "pink", icon: <Calendar size={28} />, tag: "Komunitas" },
-    { color: "green", icon: <Star size={28} />, tag: "Spesial" },
-    { color: "cyan", icon: <Zap size={28} />, tag: "Workshop" },
+    { color: "purple", icon: <Presentation size={28} />, tag: "Unggulan" },
+    { color: "blue", icon: <Laptop size={28} />, tag: "Unggulan" },
+    { color: "pink", icon: <Calendar size={28} />, tag: "Unggulan" },
+    { color: "green", icon: <Star size={28} />, tag: "Unggulan" },
+    { color: "cyan", icon: <Zap size={28} />, tag: "Unggulan" },
   ];
 
-  // --- LOGIKA LAYOUT DINAMIS (AGENDA UNGGULAN) ---
+  // --- LOGIKA LAYOUT DINAMIS ---
   const countBesar = prokerBesar.length;
-  
-  // Jika < 4 item: Flex Center (tengah). Jika >= 4 item: Grid.
   const containerBesarClass = countBesar < 4 
     ? "flex flex-wrap justify-center gap-6" 
     : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6";
   
-  // PERBAIKAN: 
-  // Hapus 'flex-1' agar kartu tidak melar memenuhi layar.
-  // Set 'max-w-[350px]' agar lebar kartu konsisten (tidak terlalu lebar).
   const cardBesarWrapperClass = countBesar < 4 
     ? "w-full max-w-[290px]" 
     : "w-full";
@@ -58,7 +54,7 @@ export default async function ProgramKerja() {
         </p>
       </section>
 
-      {/* --- PROKER BESAR (DATA DARI FIREBASE - LAYOUT DINAMIS) --- */}
+      {/* --- PROKER BESAR --- */}
       <section className="relative z-10 py-16 px-6 max-w-7xl mx-auto w-full">
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 text-orange-600 text-xs font-bold uppercase mb-4 border border-orange-100">
@@ -70,20 +66,19 @@ export default async function ProgramKerja() {
           </p>
         </div>
 
-        {/* CONTAINER DINAMIS: FLEX (CENTER) ATAU GRID */}
         <div className={containerBesarClass}>
           {prokerBesar.length > 0 ? (
             prokerBesar.map((item, index) => {
               const style = styles[index % styles.length]; 
               return (
-                // Wrapper Kartu
                 <div key={item.id || index} className={cardBesarWrapperClass}>
+                    {/* Menggunakan Komponen Client Baru */}
                     <FlagshipCard 
                       title={item.nama_proker}
                       desc={item.deskripsi}
                       icon={style.icon}
                       color={style.color}
-                      tag={style.tag}
+                      tag={style.tag} // Tag akan selalu "Unggulan" sesuai array styles
                     />
                 </div>
               );
@@ -100,7 +95,7 @@ export default async function ProgramKerja() {
         </div>
       </section>
 
-      {/* --- DIVISI ORGANISASI (TETAP GRID 3 KOLOM) --- */}
+      {/* --- DIVISI ORGANISASI --- */}
       <section className="relative z-10 py-20 px-6 bg-slate-50 border-y border-slate-200">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -114,7 +109,6 @@ export default async function ProgramKerja() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            
             <DivisionCard 
               name="BPH" role="Badan Pengurus Harian" desc="Bertanggung jawab atas arah strategis dan koordinasi."
               icon={<Gavel size={28} />} colorClass="bg-slate-100 text-slate-700"
@@ -136,16 +130,15 @@ export default async function ProgramKerja() {
               programs={getProkerByDivisi("EKRAF")}
             />
             <DivisionCard 
-              name="Divisi IT" role="Technology & Dev" desc="Pengembangan website dan eksplorasi teknologi."
+              name="IT" role="Technology & Dev" desc="Pengembangan website dan eksplorasi teknologi."
               icon={<Cpu size={28} />} colorClass="bg-cyan-100 text-cyan-600"
               programs={[...getProkerByDivisi("Divisi IT"), ...getProkerByDivisi("IT")]}
             />
             <DivisionCard 
-              name="SATIR" role="Kominfo & Media" desc="Pusat informasi, desain grafis, dan jurnalistik."
+              name="MIDTECH" role="Kominfo & Media" desc="Pusat informasi, desain grafis, dan jurnalistik."
               icon={<Palette size={28} />} colorClass="bg-pink-100 text-pink-600"
               programs={getProkerByDivisi("SATIR")}
             />
-
           </div>
         </div>
       </section>
@@ -177,38 +170,7 @@ export default async function ProgramKerja() {
   );
 }
 
-// --- KOMPONEN KECIL ---
-
-function FlagshipCard({ icon, title, desc, tag, color }: { icon: React.ReactNode, title: string, desc: string, tag: string, color: string }) {
-  const colorStyles: Record<string, string> = {
-    blue: "bg-blue-50 text-blue-600 group-hover:bg-blue-600 group-hover:text-white",
-    purple: "bg-purple-50 text-purple-600 group-hover:bg-purple-600 group-hover:text-white",
-    orange: "bg-orange-50 text-orange-600 group-hover:bg-orange-600 group-hover:text-white",
-    pink: "bg-pink-50 text-pink-600 group-hover:bg-pink-600 group-hover:text-white",
-    green: "bg-green-50 text-green-600 group-hover:bg-green-600 group-hover:text-white",
-    cyan: "bg-cyan-50 text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white",
-  };
-
-  return (
-    <div className="group bg-white p-6 rounded-3xl border border-slate-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 text-left h-full flex flex-col">
-      <div className="flex justify-between items-start mb-5">
-        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors duration-300 ${colorStyles[color] || colorStyles.blue}`}>
-          {icon}
-        </div>
-        <span className="px-3 py-1 rounded-lg bg-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider">
-          {tag}
-        </span>
-      </div>
-      <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-blue-600 transition-colors">
-        {title}
-      </h3>
-      <p className="text-sm text-slate-500 leading-relaxed flex-grow">
-        {desc || "Deskripsi program kerja belum ditambahkan."}
-      </p>
-    </div>
-  );
-}
-
+// --- DivisionCard tetap di sini karena statis (tidak perlu interaksi klik) ---
 function DivisionCard({ name, role, desc, icon, colorClass, programs }: { 
   name: string, role: string, desc: string, icon: React.ReactNode, colorClass: string, programs: any[] 
 }) {
