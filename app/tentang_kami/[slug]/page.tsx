@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft, UserCircle, CheckCircle2, Info } from "lucide-react";
-import { getTimData } from "@/lib/firestoreService";
+import { getTimData, TimData } from "@/lib/firestoreService"; // Pastikan import TimData
 import { notFound } from "next/navigation";
 
 // --- DATA STATIS: INFO DETAIL DIVISI ---
@@ -78,6 +78,48 @@ const DIVISION_DETAILS: Record<string, {
   }
 };
 
+// --- HELPER UNTUK MENGURUTKAN JABATAN ---
+const sortMembers = (members: TimData[]) => {
+    // Definisi bobot jabatan (semakin kecil angka, semakin di atas/kiri)
+    const rolePriority: Record<string, number> = {
+        "ketua umum": 1,
+        "ketua": 1,
+        "wakil ketua": 2,
+        "wakil": 2,
+        "sekretaris 1": 3,
+        "sekretaris i": 3, // jaga-jaga penulisan romawi
+        "sekretaris 2": 4,
+        "sekretaris ii": 4,
+        "sekretaris": 4, // default jika cuma satu
+        "bendahara 1": 5,
+        "bendahara i": 5,
+        "bendahara 2": 6,
+        "bendahara ii": 6,
+        "bendahara": 6, // default jika cuma satu
+        "koordinator": 7,
+        "kepala divisi": 7,
+        "staff": 99,
+        "anggota": 99
+    };
+
+    return [...members].sort((a, b) => {
+        const roleA = a.jabatan.toLowerCase().trim();
+        const roleB = b.jabatan.toLowerCase().trim();
+
+        // Cari prioritas, jika tidak ada di list anggap staff (99)
+        const priorityA = rolePriority[roleA] || 99;
+        const priorityB = rolePriority[roleB] || 99;
+
+        // Bandingkan prioritas
+        if (priorityA !== priorityB) {
+            return priorityA - priorityB;
+        }
+
+        // Jika prioritas sama (misal sama-sama Staff), urutkan berdasarkan Nama (A-Z)
+        return a.nama.localeCompare(b.nama);
+    });
+};
+
 export default async function DivisionPage({ params }: { params: Promise<{ slug: string }> }) {
   
   const resolvedParams = await params;
@@ -87,11 +129,43 @@ export default async function DivisionPage({ params }: { params: Promise<{ slug:
   if (!divisionInfo) return notFound();
 
   const allTim = await getTimData();
-  const members = allTim.filter(m => m.divisi === divisionInfo.name);
+  const rawMembers = allTim.filter(m => m.divisi === divisionInfo.name);
+  
+  // LAKUKAN SORTING DI SINI
+  const sortedMembers = sortMembers(rawMembers);
 
-  // Pisahkan Ketua/Koordinator
-  const leaders = members.filter(m => m.jabatan.toLowerCase().includes("ketua") || m.jabatan.toLowerCase().includes("koordinator") || m.jabatan.toLowerCase().includes("kepala"));
-  const staffs = members.filter(m => !m.jabatan.toLowerCase().includes("ketua") && !m.jabatan.toLowerCase().includes("koordinator") && !m.jabatan.toLowerCase().includes("kepala"));
+  // Pisahkan Ketua/Koordinator (Level Pimpinan) vs Staff (Level Anggota)
+  // Kita anggap "Pimpinan" adalah yang bukan staff/anggota biasa
+  // Untuk BPH: Semua adalah leaders (Ketua s/d Bendahara adalah inti)
+  // Untuk Divisi Lain: Ketua/Koordinator adalah leader, sisanya staff
+
+  let leaders: TimData[] = [];
+  let staffs: TimData[] = [];
+
+  if (divisionInfo.name === "BPH") {
+      // Khusus BPH, pisahkan Ketua & Wakil sebagai "Top Leader", sisanya "Core Team"
+      // Tapi agar tampilan sesuai request (Ketua & Wakil di atas sendiri), kita filter manual
+      leaders = sortedMembers.filter(m => 
+          m.jabatan.toLowerCase().includes("ketua") || 
+          m.jabatan.toLowerCase().includes("wakil")
+      );
+      staffs = sortedMembers.filter(m => 
+          !m.jabatan.toLowerCase().includes("ketua") && 
+          !m.jabatan.toLowerCase().includes("wakil")
+      );
+  } else {
+      // Divisi Biasa
+      leaders = sortedMembers.filter(m => 
+          m.jabatan.toLowerCase().includes("ketua") || 
+          m.jabatan.toLowerCase().includes("koordinator") || 
+          m.jabatan.toLowerCase().includes("kepala")
+      );
+      staffs = sortedMembers.filter(m => 
+        !m.jabatan.toLowerCase().includes("ketua") && 
+        !m.jabatan.toLowerCase().includes("koordinator") && 
+        !m.jabatan.toLowerCase().includes("kepala")
+      );
+  }
 
   return (
     <main className="min-h-screen bg-white text-slate-900 pt-32 pb-20 px-6">
@@ -151,10 +225,10 @@ export default async function DivisionPage({ params }: { params: Promise<{ slug:
             <p className="text-slate-500">Kekuatan utama di balik {divisionInfo.name}</p>
           </div>
 
-          {members.length > 0 ? (
+          {sortedMembers.length > 0 ? (
             <div className="space-y-12">
               
-              {/* Leader (Jika ada) - Ditengah */}
+              {/* Leader (Ketua & Wakil) - Ditengah */}
               {leaders.length > 0 && (
                 <div className="flex justify-center flex-wrap gap-8">
                   {leaders.map((leader) => (
@@ -165,19 +239,17 @@ export default async function DivisionPage({ params }: { params: Promise<{ slug:
                 </div>
               )}
 
-              {/* Staffs - UPDATE: Menggunakan Flex Wrap + Justify Center agar selalu ditengah */}
+              {/* Staffs / Anggota Inti Lainnya - Flex Wrap Center */}
               {staffs.length > 0 && (
                 <>
                   <div className="text-center mb-8">
-                     <h3 className="text-xl font-bold text-slate-400 uppercase tracking-widest">
-                        Koordinator & Staff
-                     </h3>
+                      <h3 className="text-xl font-bold text-slate-400 uppercase tracking-widest">
+                        {divisionInfo.name === "BPH" ? "Sekretaris & Bendahara" : "Staff Anggota"}
+                      </h3>
                   </div>
 
-                  {/* PERBAIKAN DI SINI: Ubah dari Grid ke Flex Wrap Center */}
                   <div className="flex flex-wrap justify-center gap-6">
                     {staffs.map((staff) => (
-                      // Kita set width fix agar rapi, misal w-[200px] atau pakai basis
                       <div key={staff.id} className="w-[calc(50%-12px)] md:w-[calc(25%-18px)] lg:w-[calc(20%-20px)] min-w-[160px]">
                         <TeamCard data={staff} />
                       </div>
@@ -200,7 +272,7 @@ export default async function DivisionPage({ params }: { params: Promise<{ slug:
   );
 }
 
-// --- KOMPONEN KECIL: Team Card (Updated for Better UI) ---
+// --- KOMPONEN KECIL: Team Card ---
 function TeamCard({ data }: { data: any }) {
   // Cek apakah jabatan mengandung kata-kata pemimpin
   const isLeader = 
@@ -233,17 +305,17 @@ function TeamCard({ data }: { data: any }) {
         )}
       </div>
       
-      {/* Info Nama (Min-height agar sejajar jika nama panjang) */}
+      {/* Info Nama */}
       <h3 className="font-bold text-slate-900 text-sm md:text-base group-hover:text-datasea-blue transition-colors line-clamp-2 min-h-[40px] flex items-center justify-center">
         {data.nama}
       </h3>
       
-      {/* Jabatan (Uppercase & Kecil) */}
+      {/* Jabatan */}
       <p className={`text-[10px] md:text-xs font-bold uppercase tracking-wider mt-1 mb-3 ${isLeader ? "text-blue-600" : "text-slate-500"}`}>
         {data.jabatan}
       </p>
 
-      {/* Label Divisi (Konsisten Pill Shape) */}
+      {/* Label Divisi */}
       <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold border mt-auto ${getBadgeColor(data.divisi)}`}>
         {data.divisi}
       </span>
