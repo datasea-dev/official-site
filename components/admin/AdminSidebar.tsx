@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { 
   LayoutDashboard, Calendar, Briefcase, Users, MessageSquare, LogOut, X, 
-  Target // <-- Import icon Target untuk Visi Misi
+  Target
 } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
@@ -21,8 +21,10 @@ const menuItems = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { name: "Manajemen Acara", href: "/admin/manajemen_acara", icon: Calendar },
   { name: "Program Kerja", href: "/admin/manajemen_proker", icon: Briefcase },
+  // --- MENU BARU (Lowongan) ---
+  // Menggunakan icon Briefcase sesuai permintaan Anda
+  { name: "Lowongan", href: "/admin/lowongan", icon: Briefcase }, 
   { name: "Anggota Tim", href: "/admin/manajemen_tim", icon: Users },
-  // --- MENU BARU DITAMBAHKAN DI SINI ---
   { name: "Visi & Misi", href: "/admin/visi_misi", icon: Target }, 
   { name: "Pesan Masuk", href: "/admin/manajemen_pesan", icon: MessageSquare },
 ];
@@ -44,7 +46,6 @@ export default function AdminSidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <>
       {/* --- OVERLAY GELAP (Hanya Mobile) --- */}
-      {/* Muncul jika isOpen = true, klik overlay untuk tutup */}
       <div 
         className={`fixed inset-0 bg-black/50 z-30 transition-opacity duration-300 md:hidden ${
           isOpen ? "opacity-100 visible" : "opacity-0 invisible"

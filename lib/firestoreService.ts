@@ -7,7 +7,9 @@ import {
   doc, 
   query, 
   orderBy, 
-  serverTimestamp 
+  serverTimestamp,
+  where,
+  getDoc
 } from "firebase/firestore";
 import { db } from "./firebase";
 
@@ -235,5 +237,98 @@ export const updateVisiMisi = async (id: string, data: Partial<VisiMisiData>) =>
   } catch (error) {
     console.error("Gagal update visi misi:", error);
     return { success: false, error };
+  }
+};
+
+
+// ... (kode sebelumnya biarkan saja)
+
+// ==========================================
+// 7. LAYANAN: RELAWAN (Volunteer & Applicants)
+// ==========================================
+
+export interface VolunteerPosition {
+  id?: string;
+  title: string;
+  division: string; // BPH, IT, HUMAS, dll
+  type: "Remote" | "On-Site" | "Hybrid";
+  description: string;
+  requirements: string[]; // Array of strings
+  isOpen: boolean;
+  createdAt?: any;
+}
+
+export interface ApplicantData {
+  id?: string;
+  jobId: string;
+  jobTitle: string;
+  name: string;
+  email: string;
+  whatsapp: string;
+  linkedinUrl: string;
+  reason: string; // Alasan singkat melamar
+  submittedAt?: any;
+}
+
+// --- FUNGSI LOWONGAN KERJA ---
+
+// Ambil semua lowongan (Untuk Admin)
+export const getAllPositions = async () => {
+  const q = query(collection(db, "volunteer_positions"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as VolunteerPosition));
+};
+
+// Ambil lowongan yang AKTIF saja (Untuk Halaman Public)
+export const getActivePositions = async () => {
+  const q = query(
+    collection(db, "volunteer_positions"), 
+    where("isOpen", "==", true),
+    orderBy("createdAt", "desc")
+  );
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as VolunteerPosition));
+};
+
+// Tambah Lowongan Baru
+export const addPosition = async (data: VolunteerPosition) => {
+  await addDoc(collection(db, "volunteer_positions"), {
+    ...data,
+    createdAt: serverTimestamp()
+  });
+};
+
+// --- FUNGSI PELAMAR ---
+
+// Kirim Lamaran (Submit Application)
+export const submitApplication = async (data: ApplicantData) => {
+  await addDoc(collection(db, "applicants"), {
+    ...data,
+    submittedAt: serverTimestamp()
+  });
+};
+
+// Update Status Lowongan (Buka/Tutup)
+export const togglePositionStatus = async (id: string, currentStatus: boolean) => {
+  const docRef = doc(db, "volunteer_positions", id);
+  await updateDoc(docRef, {
+    isOpen: !currentStatus
+  });
+};
+
+// Hapus Lowongan
+export const deletePosition = async (id: string) => {
+  const docRef = doc(db, "volunteer_positions", id);
+  await deleteDoc(docRef);
+};
+
+export const getPositionById = async (id: string) => {
+  const docRef = doc(db, "volunteer_positions", id);
+  const docSnap = await getDoc(docRef);
+  
+  if (docSnap.exists()) {
+    return { id: docSnap.id, ...docSnap.data() } as VolunteerPosition;
+  } else {
+    return null;
   }
 };
