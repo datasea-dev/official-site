@@ -28,12 +28,6 @@
 
 <br />
 
-> [!CAUTION]
-> **🔐 REPOSITORY PRIVATE / RAHASIA**
-> <br>
-> Source code ini mengandung logika bisnis dan konfigurasi internal komunitas Datasea. **Dilarang keras** membagikan, menyalin, atau mempublikasikan kode ini (terutama API Keys) ke publik tanpa izin tertulis dari Ketua Komunitas.
-
----
 
 ## 📖 Tentang Project
 
