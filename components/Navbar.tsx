@@ -76,11 +76,6 @@ export default function Navbar() {
                     title="Web Development" 
                     desc="Jasa pembuatan website" 
                   />
-                  <DropdownItem 
-                    href="/d_center" 
-                    title="Gaming Services" 
-                    desc="Joki & Top-up game" 
-                  />
                 </div>
               </div>
             </div>

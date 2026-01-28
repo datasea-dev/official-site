@@ -89,37 +89,6 @@ export default function DCenter() {
             </div>
           </div>
         </div>
-
-        {/* PRODUK 3: GAMING SERVICES */}
-        <div className="flex flex-col md:flex-row items-center gap-12">
-          <div className="w-full md:w-1/2">
-            <div className="relative aspect-video bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl shadow-2xl shadow-purple-900/20 flex items-center justify-center overflow-hidden border border-white/20 p-8 group">
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')] opacity-20"></div>
-              <div className="relative z-10 text-center text-white">
-                <Gamepad2 size={64} className="mx-auto mb-4 text-white group-hover:scale-110 transition-transform duration-500" />
-                <h3 className="text-2xl font-bold">Game Hub</h3>
-                <p className="text-purple-100 mt-2">Fun & Competitive</p>
-              </div>
-            </div>
-          </div>
-          <div className="w-full md:w-1/2">
-            <h3 className="text-purple-600 font-bold tracking-wider uppercase text-sm mb-2">HIBURAN & FUNDRAISING</h3>
-            <h2 className="text-3xl md:text-4xl font-bold text-datasea-blue mb-4">Gaming Services</h2>
-            <p className="text-slate-600 text-lg leading-relaxed mb-6">
-              Layanan terpercaya untuk kebutuhan *gaming* Anda. Dikelola oleh member komunitas yang berpengalaman. Keuntungan dari layanan ini digunakan untuk mendukung operasional kegiatan Datasea.
-            </p>
-            <ul className="space-y-3 mb-8">
-              <FeatureItem text="Jasa Joki Rank (MLBB, Valorant, dll)" />
-              <FeatureItem text="Top Up Game Murah & Aman" />
-              <FeatureItem text="Penyelenggaraan Turnamen E-Sport" />
-            </ul>
-            <Link href="/services/gaming" className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-all shadow-lg shadow-purple-600/20">
-              <Zap size={18} />
-              Hubungi Admin Game
-            </Link>
-          </div>
-        </div>
-
       </section>
 
       {/* --- SECTION 3: TECH STACK (Final Update: All Colored Icons) --- */}
