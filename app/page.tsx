@@ -78,19 +78,19 @@ export default async function Home() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all">
-              <span className="text-4xl font-bold text-blue-600 block mb-1">50+</span>
+              <span className="text-4xl font-bold text-blue-600 block mb-1">20+</span>
               <span className="text-slate-500 text-sm">Anggota Aktif</span>
             </div>
             <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all">
-              <span className="text-4xl font-bold text-cyan-600 block mb-1">12+</span>
+              <span className="text-4xl font-bold text-cyan-600 block mb-1">1+</span>
               <span className="text-slate-500 text-sm">Proyek Selesai</span>
             </div>
             <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all">
-              <span className="text-4xl font-bold text-purple-600 block mb-1">20+</span>
+              <span className="text-4xl font-bold text-purple-600 block mb-1">10+</span>
               <span className="text-slate-500 text-sm">Workshop & Event</span>
             </div>
             <div className="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all">
-              <span className="text-4xl font-bold text-orange-600 block mb-1">3</span>
+              <span className="text-4xl font-bold text-orange-600 block mb-1">5</span>
               <span className="text-slate-500 text-sm">Divisi Fokus</span>
             </div>
           </div>

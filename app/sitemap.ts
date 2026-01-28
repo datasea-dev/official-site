@@ -1,10 +1,9 @@
 import { MetadataRoute } from 'next';
-import { getActivePositions } from '@/lib/firestoreService'; // Import fungsi lowongan kita
+import { getActivePositions } from '@/lib/firestoreService'; 
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://datasea.my.id'; // Domain Anda
+  const baseUrl = 'https://datasea.my.id'; 
 
-  // 1. Halaman Statis
   const staticRoutes = [
     '',
     '/tentang_kami',
@@ -19,14 +18,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === '' ? 1 : 0.8,
   }));
 
-  // 2. Halaman Dinamis (Lowongan Relawan)
-  // Kita ambil data dari Firebase agar lowongan juga terindex Google
   let jobRoutes: any[] = [];
   try {
     const jobs = await getActivePositions();
     jobRoutes = jobs.map((job) => ({
       url: `${baseUrl}/relawan/${job.id}`,
-      lastModified: new Date(), // Idealnya ambil dari job.createdAt
+      lastModified: new Date(), 
       changeFrequency: 'weekly' as const,
       priority: 0.9,
     }));

@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Kita paksa agar background selalu putih dan teks selalu hitam/gelap */
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 255, 255, 255;
