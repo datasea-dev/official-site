@@ -250,12 +250,13 @@ export const updateVisiMisi = async (id: string, data: Partial<VisiMisiData>) =>
 export interface VolunteerPosition {
   id?: string;
   title: string;
-  division: string; // BPH, IT, HUMAS, dll
+  division: string;
   type: "Remote" | "On-Site" | "Hybrid";
   description: string;
-  requirements: string[]; // Array of strings
+  requirements: string[];
   isOpen: boolean;
   createdAt?: any;
+  applicationUrl?: string;
 }
 
 export interface ApplicantData {
